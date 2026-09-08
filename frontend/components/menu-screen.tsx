@@ -55,8 +55,11 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
       name: selectedProduct.name,
       quantity,
       addon_ids: selectedAddons,
+      addon_names: selectedProduct.addons
+        .filter((addon) => selectedAddons.includes(addon.id))
+        .map((addon) => addon.name),
       notes: notes.trim(),
-      total: selectedTotal.toFixed(2),
+      unit_total: (Number(selectedProduct.price) + selectedAddonTotal).toFixed(2),
     });
     localStorage.setItem("sushi-cart", JSON.stringify(currentCart));
     setCartNotice("Item adicionado ao seu pedido.");
@@ -72,6 +75,7 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
         <nav aria-label="Navegação principal">
           <a href="#menu">Cardápio</a>
           <a href="#about">Nossa casa</a>
+          <a href="/cart">Sacola</a>
         </nav>
       </header>
 
@@ -189,7 +193,7 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
                 Adicionar · {money.format(selectedTotal)}
               </button>
             </div>
-            {cartNotice && <p className="cart-notice" role="status">{cartNotice}</p>}
+            {cartNotice && <p className="cart-notice" role="status">{cartNotice} <a href="/cart">Ver sua sacola →</a></p>}
           </section>
         </div>
       )}
