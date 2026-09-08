@@ -42,6 +42,8 @@ sushi-app/
 ### Requirements
 
 - Python 3.13+
+- Node.js 24+
+- pnpm 10+
 - Git
 
 ### Setup
@@ -96,6 +98,31 @@ Useful local URLs:
 
 ```bash
 python -m pytest
+```
+
+## Run the frontend locally
+
+Install the frontend dependencies and create its local environment file:
+
+```powershell
+pnpm --dir frontend install
+Copy-Item frontend/.env.local.example frontend/.env.local
+```
+
+Start the Next.js development server:
+
+```powershell
+pnpm --dir frontend dev
+```
+
+The customer menu will be available at `http://localhost:3000`. The backend must also be running so the server can load categories and products from the API.
+
+Run the frontend checks:
+
+```powershell
+pnpm --dir frontend lint
+pnpm --dir frontend test
+pnpm --dir frontend build
 ```
 
 ## Development workflow
