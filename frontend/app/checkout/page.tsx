@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import type { CartItem } from "@/types/cart";
+import { cartItemsToOrderItems, createOrder } from "@/lib/order-api";
 
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const DELIVERY_FEE = 5;
@@ -19,6 +20,8 @@ export default function CheckoutPage() {
   const [changeFor, setChangeFor] = useState("");
   const [error, setError] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     // localStorage is only available after hydration; this synchronizes browser state once.
@@ -30,7 +33,7 @@ export default function CheckoutPage() {
   const deliveryFee = fulfillment === "delivery" ? DELIVERY_FEE : 0;
   const total = subtotal + deliveryFee;
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!customerName.trim() || !phone.trim()) {
       setError("Informe seu nome e telefone para continuar.");
@@ -44,13 +47,28 @@ export default function CheckoutPage() {
       setError("Informe para qual valor precisamos preparar o troco.");
       return;
     }
-    localStorage.setItem("pending-order", JSON.stringify({ customerName, phone, fulfillment, payment, address, notes, changeFor, total: total.toFixed(2), items }));
-    setError("");
-    setConfirmed(true);
+    setSubmitting(true);
+    try {
+      const order = await createOrder({
+        customer_name: customerName.trim(), phone: phone.trim(), fulfillment_method: fulfillment,
+        payment_method: payment, address: fulfillment === "delivery" ? address : null,
+        notes: `${notes}${payment === "cash" ? ` Troco para ${changeFor}.` : ""}`.trim() || null,
+        items: cartItemsToOrderItems(items),
+      });
+      localStorage.setItem("last-order-number", order.number);
+      localStorage.removeItem("sushi-cart");
+      setOrderNumber(order.number);
+      setError("");
+      setConfirmed(true);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Não foi possível enviar o pedido.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (confirmed) {
-    return <main className="state-page"><span className="state-symbol" aria-hidden="true">✓</span><p className="eyebrow">Tudo certo</p><h1>Pedido revisado.</h1><p>Suas informações foram preparadas para o próximo passo de confirmação.</p><Link className="primary-button" href="/cart">Voltar à sacola</Link></main>;
+    return <main className="state-page"><span className="state-symbol" aria-hidden="true">✓</span><p className="eyebrow">Pedido confirmado</p><h1>Obrigado por pedir com a gente.</h1><p>Seu número é <strong>{orderNumber}</strong>. Acompanhe o preparo do seu pedido.</p><Link className="primary-button" href={`/orders/${orderNumber}`}>Acompanhar pedido →</Link></main>;
   }
 
   if (items.length === 0) {
@@ -70,7 +88,7 @@ export default function CheckoutPage() {
             <fieldset><legend>Pagamento</legend><div className="payment-list"><label><input type="radio" name="payment" checked={payment === "pix"} onChange={() => setPayment("pix")} /> PIX <span>Pagamento instantâneo</span></label><label><input type="radio" name="payment" checked={payment === "card_on_delivery"} onChange={() => setPayment("card_on_delivery")} /> Cartão na entrega <span>Leve sua maquininha</span></label><label><input type="radio" name="payment" checked={payment === "cash"} onChange={() => setPayment("cash")} /> Dinheiro <span>Pagamento na entrega</span></label></div>{payment === "cash" && <label>Troco para<input required value={changeFor} onChange={(event) => setChangeFor(event.target.value)} placeholder="Ex.: R$ 100,00" /></label>}</fieldset>
             <fieldset><legend>Observações do pedido</legend><textarea value={notes} maxLength={240} onChange={(event) => setNotes(event.target.value)} placeholder="Alguma observação para a nossa equipe?" /></fieldset>
             {error && <p className="form-error" role="alert">{error}</p>}
-            <button className="primary-button confirm-button" type="submit">Revisar pedido · {money.format(total)}</button>
+            <button className="primary-button confirm-button" type="submit" disabled={submitting}>{submitting ? "Enviando pedido..." : `Confirmar pedido · ${money.format(total)}`}</button>
           </div>
           <aside className="checkout-summary"><h2>Resumo final</h2>{items.map((item, index) => <div className="summary-item" key={`${item.product_id}-${index}`}><span>{item.quantity}× {item.name}</span><strong>{money.format(Number(item.unit_total) * item.quantity)}</strong></div>)}<dl><div><dt>Subtotal</dt><dd>{money.format(subtotal)}</dd></div><div><dt>Entrega</dt><dd>{deliveryFee ? money.format(deliveryFee) : "Grátis"}</dd></div><div className="total-line"><dt>Total</dt><dd>{money.format(total)}</dd></div></dl></aside>
         </form>
