@@ -32,6 +32,18 @@ Routes receive HTTP requests and delegate data operations to service and persist
 
 PostgreSQL will persist categories, products, add-ons, customers, addresses, orders and order items. Schema changes will be managed through versioned migrations.
 
+The initial relational model is:
+
+```text
+Category 1 --- N Product 1 --- N ProductAddon
+Customer 1 --- N Address
+Customer 1 --- N Order 1 --- N OrderItem 1 --- N OrderItemAddon
+Address  1 --- N Order
+Product  1 --- N OrderItem
+```
+
+Order items keep snapshots of product and add-on names and prices so historical orders remain accurate when the menu changes.
+
 Money values will use fixed-precision decimal database types. Prices and totals must never rely on binary floating-point calculations in the persistent domain model.
 
 ## Primary customer flow
