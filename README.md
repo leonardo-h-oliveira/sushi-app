@@ -1,20 +1,21 @@
 # Sushi App
 
-A mobile-first ordering application for Sushi Poços. The MVP will allow customers to browse the menu, configure products, manage a shopping cart, choose delivery or pickup, place orders and track their status. Restaurant staff will have a protected area for managing orders and menu availability.
+A mobile-first ordering application for Sushi Poços. The MVP allows customers to browse the menu, configure products, manage a shopping cart, choose delivery or pickup, place orders and track their status. Restaurant staff have a protected area for managing orders and menu availability.
 
 ## Project status
 
-The project is in its MVP development phase. The backend exposes a health response plus database-backed category and product APIs. The customer interface and the remaining administrative features are tracked as separate GitHub issues.
+The MVP is implemented and covered by automated backend and frontend checks. The backend exposes database-backed catalog, authentication, order and administration APIs. The frontend includes the customer menu, product details, cart, checkout, order tracking, staff order management and menu management screens.
 
-The initial database schema and its first reversible Alembic migration are available. Public catalog endpoints only expose active products from active categories.
+The initial database schema and its reversible Alembic migrations are available. Public catalog endpoints only expose active products from active categories.
 
-## Planned stack
+## Stack
 
-- **Frontend:** Next.js, React and TypeScript
-- **Backend:** Python and FastAPI
-- **Database:** PostgreSQL with SQLAlchemy
-- **Testing:** pytest and FastAPI TestClient
-- **Version control:** Git and GitHub
+- **Frontend:** Next.js, React, TypeScript and Tailwind CSS
+- **Backend:** Python, FastAPI and SQLAlchemy
+- **Database:** SQLite for local development; PostgreSQL-ready configuration
+- **Migrations:** Alembic
+- **Testing:** pytest, FastAPI TestClient and Vitest
+- **Version control and CI:** Git, GitHub and GitHub Actions
 
 The detailed technical boundaries and request flows are documented in [docs/architecture.md](docs/architecture.md).
 
@@ -33,6 +34,7 @@ sushi-app/
 |-- docs/
 |   `-- architecture.md
 |-- frontend/
+|-- .github/workflows/ci.yml
 |-- pytest.ini
 `-- README.md
 ```
@@ -91,14 +93,9 @@ alembic -c backend/alembic.ini downgrade -1
 Useful local URLs:
 
 - API root: `http://127.0.0.1:8000/`
+- Health probe: `http://127.0.0.1:8000/health`
 - Products: `http://127.0.0.1:8000/products`
 - Interactive API documentation: `http://127.0.0.1:8000/docs`
-
-## Run the tests
-
-```bash
-python -m pytest
-```
 
 ## Run the frontend locally
 
@@ -115,15 +112,20 @@ Start the Next.js development server:
 pnpm --dir frontend dev
 ```
 
-The customer menu will be available at `http://localhost:3000`. The backend must also be running so the server can load categories and products from the API.
+The customer menu is available at `http://localhost:3000`. Staff tools are available at `/admin/orders` and `/admin/menu`.
 
-Run the frontend checks:
+## Quality checks
+
+Run the complete local validation suite:
 
 ```powershell
-pnpm --dir frontend lint
-pnpm --dir frontend test
-pnpm --dir frontend build
+backend\.venv\Scripts\python -m pytest
+pnpm --dir frontend exec vitest run
+pnpm --dir frontend exec eslint .
+pnpm --dir frontend exec next build
 ```
+
+GitHub Actions runs the backend tests, frontend tests, ESLint and the production build for every pull request and every push to `main`.
 
 ## Development workflow
 
@@ -145,11 +147,16 @@ feat/4-categories-api
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/` | Confirms that the API is running |
+| `GET` | `/health` | Returns a deployment health status |
 | `GET` | `/categories` | Lists active menu categories |
 | `GET` | `/products` | Lists available products; accepts a `category` slug filter |
 | `GET` | `/products/{id}` | Retrieves an available product |
+| `POST` | `/auth/login` | Authenticates a staff member |
+| `POST` | `/auth/logout` | Validates a staff session logout request |
+| `GET` | `/orders` | Lists orders for authenticated staff |
+| `PATCH` | `/orders/{number}/status` | Updates an order status for authenticated staff |
 | `POST` | `/admin/categories` | Creates a category |
-| `PATCH` | `/admin/categories/{id}` | Renames a category |
+| `PATCH` | `/admin/categories/{id}` | Renames or updates a category |
 | `DELETE` | `/admin/categories/{id}` | Deactivates a category |
 | `POST` | `/admin/products` | Creates a product |
 | `PATCH` | `/admin/products/{id}` | Updates product data and availability |
@@ -158,9 +165,8 @@ feat/4-categories-api
 
 - Never commit `.env` files, passwords, tokens or database credentials.
 - Keep only safe example values in `.env.example`.
-- Category management currently requires the `X-Admin-Key` header configured through `ADMIN_API_KEY`.
-- The development-only fallback key is rejected outside development and test environments.
-- Token-based administrator authentication will replace this temporary key before publication.
+- Staff routes require signed bearer authentication configured through the administrator environment variables.
+- The legacy `X-Admin-Key` mechanism remains available only for compatible development and test flows.
 
 ## License
 
