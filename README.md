@@ -6,6 +6,8 @@ A mobile-first ordering application for Sushi Poços. The MVP will allow custome
 
 The project is in its foundation phase. The current backend exposes a health response and a temporary in-memory product list. Database persistence, the customer interface and the administrative area are tracked as separate GitHub issues.
 
+The initial database schema and its first reversible Alembic migration are now available. API endpoints still use the temporary catalog until the product and category API issues are completed.
+
 ## Planned stack
 
 - **Frontend:** Next.js, React and TypeScript
@@ -70,6 +72,18 @@ Start the API from the repository root:
 
 ```bash
 uvicorn app.main:app --app-dir backend --reload
+```
+
+Apply the database migrations from the repository root:
+
+```bash
+alembic -c backend/alembic.ini upgrade head
+```
+
+Roll back the latest migration:
+
+```bash
+alembic -c backend/alembic.ini downgrade -1
 ```
 
 Useful local URLs:
