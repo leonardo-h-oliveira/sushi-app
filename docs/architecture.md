@@ -81,6 +81,7 @@ Folders will be added only when their corresponding MVP feature is implemented.
 - `.env` is local and must never be committed.
 - `.env.example` documents required variables using non-sensitive values.
 - Administrative routes will require authenticated and authorized users.
+- Category management uses an environment-backed administrator key temporarily; the authentication issue will replace it with token-based user sessions.
 - Public responses must not expose secrets or internal error details.
 
 ## Testing strategy
