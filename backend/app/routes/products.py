@@ -1,38 +1,46 @@
-from fastapi import APIRouter
+from typing import Annotated
 
-router = APIRouter(
-    prefix="/products",
-    tags=["Products"]
+from fastapi import APIRouter, Depends, Query, status
+from sqlalchemy.orm import Session
+
+from app.core.security import require_admin
+from app.database import get_db
+from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from app.services import products as product_service
+
+
+router = APIRouter(tags=["Products"])
+DatabaseSession = Annotated[Session, Depends(get_db)]
+Administrator = Annotated[None, Depends(require_admin)]
+
+
+@router.get("/products", response_model=list[ProductResponse])
+def list_products(
+    db: DatabaseSession,
+    category: Annotated[str | None, Query(min_length=1, max_length=80)] = None,
+):
+    return product_service.list_available_products(db, category)
+
+
+@router.get("/products/{product_id}", response_model=ProductResponse)
+def get_product(product_id: int, db: DatabaseSession):
+    return product_service.get_available_product(db, product_id)
+
+
+@router.post(
+    "/admin/products",
+    response_model=ProductResponse,
+    status_code=status.HTTP_201_CREATED,
 )
-
-products = [
-    {
-        "id": 1,
-        "name": "Hot Roll",
-        "description": "8 unidades de hot roll",
-        "price": 24.90,
-        "category": "Hot Rolls",
-        "active": True
-    },
-    {
-        "id": 2,
-        "name": "Combo 30 peças",
-        "description": "Seleção especial com 30 peças",
-        "price": 59.90,
-        "category": "Combos",
-        "active": True
-    },
-    {
-        "id": 3,
-        "name": "Temaki Salmão",
-        "description": "Temaki de salmão com cream cheese",
-        "price": 29.90,
-        "category": "Temakis",
-        "active": True
-    }
-]
+def create_product(payload: ProductCreate, db: DatabaseSession, _: Administrator):
+    return product_service.create_product(db, payload)
 
 
-@router.get("")
-def list_products():
-    return products
+@router.patch("/admin/products/{product_id}", response_model=ProductResponse)
+def update_product(
+    product_id: int,
+    payload: ProductUpdate,
+    db: DatabaseSession,
+    _: Administrator,
+):
+    return product_service.update_product(db, product_id, payload)
