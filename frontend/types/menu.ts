@@ -13,4 +13,12 @@ export interface Product {
   image_url: string | null;
   active: boolean;
   category: Pick<Category, "id" | "name" | "slug">;
+  addons: ProductAddon[];
+}
+
+export interface ProductAddon {
+  id: number;
+  name: string;
+  price_delta: string;
+  active: boolean;
 }

@@ -9,7 +9,7 @@ def list_available(db: Session, category_slug: str | None = None) -> list[Produc
     statement = (
         select(Product)
         .join(Product.category)
-        .options(selectinload(Product.category))
+        .options(selectinload(Product.category), selectinload(Product.addons))
         .where(Product.active.is_(True), Category.active.is_(True))
         .order_by(Category.name, Product.name)
     )
@@ -22,7 +22,7 @@ def get_available(db: Session, product_id: int) -> Product | None:
     statement = (
         select(Product)
         .join(Product.category)
-        .options(selectinload(Product.category))
+        .options(selectinload(Product.category), selectinload(Product.addons))
         .where(
             Product.id == product_id,
             Product.active.is_(True),
@@ -35,7 +35,7 @@ def get_available(db: Session, product_id: int) -> Product | None:
 def get_by_id(db: Session, product_id: int) -> Product | None:
     statement = (
         select(Product)
-        .options(selectinload(Product.category))
+        .options(selectinload(Product.category), selectinload(Product.addons))
         .where(Product.id == product_id)
     )
     return db.scalar(statement)
