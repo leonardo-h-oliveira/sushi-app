@@ -1,4 +1,8 @@
-import type { Category, Product } from "@/types/menu";
+"use client";
+
+import { useMemo, useState } from "react";
+
+import type { Category, Product, ProductAddon } from "@/types/menu";
 
 const money = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -11,9 +15,52 @@ interface MenuScreenProps {
 }
 
 export function MenuScreen({ categories, products }: MenuScreenProps) {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedAddons, setSelectedAddons] = useState<number[]>([]);
+  const [notes, setNotes] = useState("");
+  const [cartNotice, setCartNotice] = useState("");
   const populatedCategories = categories.filter((category) =>
     products.some((product) => product.category.id === category.id),
   );
+  const selectedAddonTotal = useMemo(
+    () => selectedProduct?.addons
+      .filter((addon) => selectedAddons.includes(addon.id))
+      .reduce((total, addon) => total + Number(addon.price_delta), 0) ?? 0,
+    [selectedAddons, selectedProduct],
+  );
+  const selectedTotal = selectedProduct
+    ? (Number(selectedProduct.price) + selectedAddonTotal) * quantity
+    : 0;
+
+  function openProduct(product: Product) {
+    setSelectedProduct(product);
+    setQuantity(1);
+    setSelectedAddons([]);
+    setNotes("");
+    setCartNotice("");
+  }
+
+  function toggleAddon(addon: ProductAddon) {
+    setSelectedAddons((current) => current.includes(addon.id)
+      ? current.filter((id) => id !== addon.id)
+      : [...current, addon.id]);
+  }
+
+  function addConfiguredItem() {
+    if (!selectedProduct) return;
+    const currentCart = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]") as unknown[];
+    currentCart.push({
+      product_id: selectedProduct.id,
+      name: selectedProduct.name,
+      quantity,
+      addon_ids: selectedAddons,
+      notes: notes.trim(),
+      total: selectedTotal.toFixed(2),
+    });
+    localStorage.setItem("sushi-cart", JSON.stringify(currentCart));
+    setCartNotice("Item adicionado ao seu pedido.");
+  }
 
   return (
     <main>
@@ -75,6 +122,7 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
               <div className="product-grid">
                 {products.filter((product) => product.category.id === category.id).map((product) => (
                   <article className="product-card" key={product.id}>
+                    <button className="card-open" type="button" onClick={() => openProduct(product)} aria-label={`Configurar ${product.name}`}>
                     <div className="product-image">
                       {product.image_url ? (
                         <div
@@ -90,7 +138,8 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
                       <p>{product.description || "Preparado com ingredientes selecionados."}</p>
                       <strong>{money.format(Number(product.price))}</strong>
                     </div>
-                    <span className="card-arrow" aria-hidden="true">→</span>
+                      <span className="card-arrow" aria-hidden="true">→</span>
+                    </button>
                   </article>
                 ))}
               </div>
@@ -98,6 +147,52 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
           ))
         )}
       </section>
+
+      {selectedProduct && (
+        <div className="detail-backdrop" role="presentation" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setSelectedProduct(null);
+        }}>
+          <section className="product-detail" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+            <button className="detail-close" type="button" onClick={() => setSelectedProduct(null)} aria-label="Fechar detalhes">×</button>
+            <p className="eyebrow">{selectedProduct.category.name}</p>
+            <h2 id="detail-title">{selectedProduct.name}</h2>
+            <p className="detail-description">{selectedProduct.description || "Preparado com ingredientes selecionados."}</p>
+            <div className="detail-price">{money.format(Number(selectedProduct.price))}</div>
+
+            {selectedProduct.addons.length > 0 && (
+              <fieldset className="addons-fieldset">
+                <legend>Quer deixar do seu jeito?</legend>
+                {selectedProduct.addons.filter((addon) => addon.active).map((addon) => (
+                  <label className="addon-option" key={addon.id}>
+                    <input
+                      type="checkbox"
+                      checked={selectedAddons.includes(addon.id)}
+                      onChange={() => toggleAddon(addon)}
+                    />
+                    <span>{addon.name}</span>
+                    <strong>+ {money.format(Number(addon.price_delta))}</strong>
+                  </label>
+                ))}
+              </fieldset>
+            )}
+
+            <label className="notes-field">Observações (opcional)
+              <textarea value={notes} maxLength={180} onChange={(event) => setNotes(event.target.value)} placeholder="Ex.: pouco shoyu, sem cebolinha..." />
+            </label>
+            <div className="detail-actions">
+              <div className="quantity-control" aria-label="Quantidade">
+                <button type="button" onClick={() => setQuantity((current) => Math.max(1, current - 1))} aria-label="Diminuir quantidade">−</button>
+                <output>{quantity}</output>
+                <button type="button" onClick={() => setQuantity((current) => current + 1)} aria-label="Aumentar quantidade">+</button>
+              </div>
+              <button className="primary-button add-button" type="button" onClick={addConfiguredItem}>
+                Adicionar · {money.format(selectedTotal)}
+              </button>
+            </div>
+            {cartNotice && <p className="cart-notice" role="status">{cartNotice}</p>}
+          </section>
+        </div>
+      )}
 
       <footer id="about">
         <p className="brand-footer">Sushi Poços</p>

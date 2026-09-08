@@ -58,6 +58,15 @@ class ProductCategoryResponse(BaseModel):
     slug: str
 
 
+class ProductAddonResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    price_delta: Decimal
+    active: bool
+
+
 class ProductResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -68,5 +77,6 @@ class ProductResponse(BaseModel):
     image_url: str | None
     active: bool
     category: ProductCategoryResponse
+    addons: list[ProductAddonResponse] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime

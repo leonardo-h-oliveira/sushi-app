@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { MenuScreen } from "./menu-screen";
@@ -17,6 +17,7 @@ const products = [
     image_url: null,
     active: true,
     category: { id: 1, name: "Temakis", slug: "temakis" },
+    addons: [{ id: 11, name: "Cream cheese extra", price_delta: "3.50", active: true }],
   },
 ];
 
@@ -29,6 +30,17 @@ describe("MenuScreen", () => {
     expect(screen.getByText("Temaki Salmão")).toBeInTheDocument();
     expect(screen.getByText("R$ 29,90")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Combos" })).not.toBeInTheDocument();
+  });
+
+  it("opens product configuration and calculates quantity and add-on totals", () => {
+    render(<MenuScreen categories={categories} products={products} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Configurar Temaki Salmão" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox", { name: /Cream cheese extra/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Aumentar quantidade" }));
+
+    expect(screen.getByRole("button", { name: /Adicionar.*66,80/ })).toBeInTheDocument();
   });
 
   it("shows an accessible empty state when no products are available", () => {

@@ -9,7 +9,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.database import get_db
 from app.main import app
-from app.models import Base, Category, Product
+from app.models import Base, Category, Product, ProductAddon
 
 
 ADMIN_HEADERS = {"X-Admin-Key": "local-development-only"}
@@ -98,6 +98,9 @@ def test_customer_can_retrieve_available_product(
         description="Eight pieces",
         price=Decimal("24.90"),
     )
+    product.addons.append(
+        ProductAddon(name="Cream cheese extra", price_delta=Decimal("3.50"))
+    )
     db_session.add(product)
     db_session.commit()
 
@@ -105,6 +108,7 @@ def test_customer_can_retrieve_available_product(
 
     assert response.status_code == 200
     assert response.json()["category"]["slug"] == "temakis"
+    assert response.json()["addons"][0]["name"] == "Cream cheese extra"
     assert client.get("/products/999").status_code == 404
 
 
