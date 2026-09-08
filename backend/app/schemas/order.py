@@ -7,6 +7,8 @@ from app.models.enums import FulfillmentMethod, OrderStatus, PaymentMethod
 
 
 class AddressInput(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     street: str = Field(min_length=2, max_length=160)
     number: str = Field(min_length=1, max_length=20)
     neighborhood: str = Field(min_length=2, max_length=100)
@@ -61,3 +63,20 @@ class OrderResponse(BaseModel):
     total: Decimal
     created_at: datetime
     items: list[OrderItemResponse]
+    customer_name: str | None = None
+    phone: str | None = None
+    address: AddressInput | None = None
+    notes: str | None = None
+
+    @classmethod
+    def from_model(cls, order):
+        data = cls.model_validate(order)
+        data.customer_name = order.customer.name if order.customer else None
+        data.phone = order.customer.phone if order.customer else None
+        data.address = AddressInput.model_validate(order.address) if order.address else None
+        data.notes = order.notes
+        return data
+
+
+class OrderStatusUpdate(BaseModel):
+    status: OrderStatus

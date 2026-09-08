@@ -10,6 +10,7 @@ from app.models.customer import Customer
 from app.models.order import Order, OrderItem, OrderItemAddon
 from app.models.product import Product
 from app.repositories import orders as order_repository
+from app.models.enums import OrderStatus
 from app.schemas.order import OrderCreate
 
 
@@ -50,6 +51,17 @@ def get_order(db: Session, number: str) -> Order:
     if order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found.")
     return order
+
+
+def list_orders(db: Session) -> list[Order]:
+    return order_repository.list_orders(db)
+
+
+def update_status(db: Session, number: str, new_status: OrderStatus) -> Order:
+    order = get_order(db, number)
+    order.status = new_status
+    db.commit()
+    return get_order(db, order.number)
 
 
 def _order_number() -> str:
