@@ -15,6 +15,11 @@ app.include_router(auth_router)
 app.include_router(orders_router)
 
 
+@app.get("/health", tags=["Operations"])
+def health_check():
+    return {"status": "ok"}
+
+
 @app.get("/")
 def root():
     return {
