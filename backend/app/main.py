@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.routes.categories import router as categories_router
+from app.routes.orders import router as orders_router
 from app.routes.products import router as products_router
 
 app = FastAPI(
@@ -9,6 +10,7 @@ app = FastAPI(
 
 app.include_router(products_router)
 app.include_router(categories_router)
+app.include_router(orders_router)
 
 
 @app.get("/")

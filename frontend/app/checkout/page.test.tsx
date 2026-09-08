@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import CheckoutPage from "./page";
 
@@ -8,6 +8,7 @@ const item = { product_id: 1, name: "Temaki Salmão", quantity: 1, addon_ids: []
 beforeEach(() => {
   localStorage.clear();
   localStorage.setItem("sushi-cart", JSON.stringify([item]));
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ number: "SP260908-ABC123", status: "received", total: "34.90" }) }));
 });
 
 describe("CheckoutPage", () => {
@@ -15,11 +16,11 @@ describe("CheckoutPage", () => {
     render(<CheckoutPage />);
     await screen.findByRole("heading", { name: "Como vamos entregar?" });
 
-    fireEvent.click(screen.getByRole("button", { name: /Revisar pedido/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Confirmar pedido/ }));
     expect(screen.getByRole("alert")).toHaveTextContent("nome e telefone");
     fireEvent.change(screen.getByLabelText("Nome completo"), { target: { value: "Ana Sushi" } });
     fireEvent.change(screen.getByLabelText("Telefone"), { target: { value: "35999999999" } });
-    fireEvent.click(screen.getByRole("button", { name: /Revisar pedido/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Confirmar pedido/ }));
     expect(screen.getByRole("alert")).toHaveTextContent("rua, número e bairro");
   });
 
@@ -29,9 +30,9 @@ describe("CheckoutPage", () => {
     fireEvent.change(screen.getByLabelText("Nome completo"), { target: { value: "Ana Sushi" } });
     fireEvent.change(screen.getByLabelText("Telefone"), { target: { value: "35999999999" } });
     fireEvent.click(screen.getByLabelText(/Retirada/));
-    fireEvent.click(screen.getByRole("button", { name: /Revisar pedido/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Confirmar pedido/ }));
 
-    await waitFor(() => expect(screen.getByRole("heading", { name: "Pedido revisado." })).toBeInTheDocument());
-    expect(JSON.parse(localStorage.getItem("pending-order") ?? "{}").fulfillment).toBe("pickup");
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Obrigado por pedir com a gente." })).toBeInTheDocument());
+    expect(localStorage.getItem("last-order-number")).toBe("SP260908-ABC123");
   });
 });
