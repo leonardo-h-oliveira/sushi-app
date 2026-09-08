@@ -104,3 +104,27 @@ def test_invalid_order_data_returns_clear_errors(client: TestClient, product: Pr
     assert unavailable.status_code == 422
     assert unavailable.json()["detail"] == "One of the selected products is unavailable."
     assert unknown.status_code == 404
+
+
+def test_admin_can_list_orders_and_update_status(client: TestClient, product: Product) -> None:
+    created = client.post(
+        "/orders",
+        json={
+            "customer_name": "Staff Test",
+            "phone": "35999999999",
+            "fulfillment_method": "pickup",
+            "payment_method": "pix",
+            "items": [{"product_id": product.id, "quantity": 1}],
+        },
+    ).json()
+    headers = {"X-Admin-Key": "local-development-only"}
+
+    assert client.get("/orders", headers=headers).json()[0]["customer_name"] == "Staff Test"
+    updated = client.patch(
+        f"/orders/{created['number']}/status",
+        headers=headers,
+        json={"status": "preparing"},
+    )
+    assert updated.status_code == 200
+    assert updated.json()["status"] == "preparing"
+    assert client.get("/orders").status_code == 401
