@@ -4,9 +4,9 @@ A mobile-first ordering application for Sushi Poços. The MVP will allow custome
 
 ## Project status
 
-The project is in its MVP development phase. The backend exposes a health response, a database-backed category API and a temporary in-memory product list. The customer interface and the remaining administrative features are tracked as separate GitHub issues.
+The project is in its MVP development phase. The backend exposes a health response plus database-backed category and product APIs. The customer interface and the remaining administrative features are tracked as separate GitHub issues.
 
-The initial database schema and its first reversible Alembic migration are available. Product endpoints will move to database persistence in the next API issue.
+The initial database schema and its first reversible Alembic migration are available. Public catalog endpoints only expose active products from active categories.
 
 ## Planned stack
 
@@ -119,10 +119,13 @@ feat/4-categories-api
 | --- | --- | --- |
 | `GET` | `/` | Confirms that the API is running |
 | `GET` | `/categories` | Lists active menu categories |
-| `GET` | `/products` | Returns the temporary product catalog |
+| `GET` | `/products` | Lists available products; accepts a `category` slug filter |
+| `GET` | `/products/{id}` | Retrieves an available product |
 | `POST` | `/admin/categories` | Creates a category |
 | `PATCH` | `/admin/categories/{id}` | Renames a category |
 | `DELETE` | `/admin/categories/{id}` | Deactivates a category |
+| `POST` | `/admin/products` | Creates a product |
+| `PATCH` | `/admin/products/{id}` | Updates product data and availability |
 
 ## Security
 
