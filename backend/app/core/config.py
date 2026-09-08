@@ -14,6 +14,7 @@ class Settings:
         "DATABASE_URL",
         "postgresql://postgres:postgres@localhost:5432/sushi_app",
     )
+    admin_api_key: str = os.getenv("ADMIN_API_KEY", "local-development-only")
 
 
 settings = Settings()

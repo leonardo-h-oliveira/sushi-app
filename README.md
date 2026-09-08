@@ -4,9 +4,9 @@ A mobile-first ordering application for Sushi Poços. The MVP will allow custome
 
 ## Project status
 
-The project is in its foundation phase. The current backend exposes a health response and a temporary in-memory product list. Database persistence, the customer interface and the administrative area are tracked as separate GitHub issues.
+The project is in its MVP development phase. The backend exposes a health response, a database-backed category API and a temporary in-memory product list. The customer interface and the remaining administrative features are tracked as separate GitHub issues.
 
-The initial database schema and its first reversible Alembic migration are now available. API endpoints still use the temporary catalog until the product and category API issues are completed.
+The initial database schema and its first reversible Alembic migration are available. Product endpoints will move to database persistence in the next API issue.
 
 ## Planned stack
 
@@ -118,13 +118,19 @@ feat/4-categories-api
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/` | Confirms that the API is running |
+| `GET` | `/categories` | Lists active menu categories |
 | `GET` | `/products` | Returns the temporary product catalog |
+| `POST` | `/admin/categories` | Creates a category |
+| `PATCH` | `/admin/categories/{id}` | Renames a category |
+| `DELETE` | `/admin/categories/{id}` | Deactivates a category |
 
 ## Security
 
 - Never commit `.env` files, passwords, tokens or database credentials.
 - Keep only safe example values in `.env.example`.
-- Administrative endpoints will require authentication before the MVP is published.
+- Category management currently requires the `X-Admin-Key` header configured through `ADMIN_API_KEY`.
+- The development-only fallback key is rejected outside development and test environments.
+- Token-based administrator authentication will replace this temporary key before publication.
 
 ## License
 
