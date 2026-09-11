@@ -140,7 +140,15 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
                     <div className="product-copy">
                       <h4>{product.name}</h4>
                       <p>{product.description || "Preparado com ingredientes selecionados."}</p>
-                      <strong>{money.format(Number(product.price))}</strong>
+                      <div className="product-price">
+                        {product.original_price && (
+                          <span>{money.format(Number(product.original_price))}</span>
+                        )}
+                        <strong>{money.format(Number(product.price))}</strong>
+                        {product.discount_percent && (
+                          <em>{product.discount_percent}% OFF</em>
+                        )}
+                      </div>
                     </div>
                       <span className="card-arrow" aria-hidden="true">→</span>
                     </button>
@@ -161,7 +169,15 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
             <p className="eyebrow">{selectedProduct.category.name}</p>
             <h2 id="detail-title">{selectedProduct.name}</h2>
             <p className="detail-description">{selectedProduct.description || "Preparado com ingredientes selecionados."}</p>
-            <div className="detail-price">{money.format(Number(selectedProduct.price))}</div>
+            <div className="detail-price">
+              {selectedProduct.original_price && (
+                <del>{money.format(Number(selectedProduct.original_price))}</del>
+              )}
+              <strong>{money.format(Number(selectedProduct.price))}</strong>
+              {selectedProduct.discount_percent && (
+                <span>{selectedProduct.discount_percent}% OFF</span>
+              )}
+            </div>
 
             {selectedProduct.addons.length > 0 && (
               <fieldset className="addons-fieldset">

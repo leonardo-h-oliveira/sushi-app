@@ -92,4 +92,5 @@ def test_schema_contains_expected_foreign_keys_and_checks(tmp_path, monkeypatch)
     assert order_targets == {"addresses", "customers"}
     assert order_item_targets == {"orders", "products"}
     assert "ck_products_price_non_negative" in product_checks
+    assert "ck_products_original_price_above_price" in product_checks
     assert "ck_order_items_quantity_positive" in order_item_checks

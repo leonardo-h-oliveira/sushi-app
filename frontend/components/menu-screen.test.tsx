@@ -14,6 +14,8 @@ const products = [
     name: "Temaki Salmão",
     description: "Salmão fresco e cream cheese",
     price: "29.90",
+    original_price: "39.90",
+    discount_percent: 25,
     image_url: null,
     active: true,
     category: { id: 1, name: "Temakis", slug: "temakis" },
@@ -29,6 +31,8 @@ describe("MenuScreen", () => {
     expect(screen.getByRole("heading", { name: "Temakis" })).toBeInTheDocument();
     expect(screen.getByText("Temaki Salmão")).toBeInTheDocument();
     expect(screen.getByText("R$ 29,90")).toBeInTheDocument();
+    expect(screen.getByText("R$ 39,90")).toBeInTheDocument();
+    expect(screen.getByText("25% OFF")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Combos" })).not.toBeInTheDocument();
   });
 

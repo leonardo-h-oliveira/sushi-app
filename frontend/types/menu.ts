@@ -10,6 +10,8 @@ export interface Product {
   name: string;
   description: string;
   price: string;
+  original_price: string | null;
+  discount_percent: number | null;
   image_url: string | null;
   active: boolean;
   category: Pick<Category, "id" | "name" | "slug">;
