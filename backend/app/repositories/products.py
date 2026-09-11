@@ -2,14 +2,22 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.category import Category
-from app.models.product import Product
+from app.models.product import Product, ProductVariantGroup
+
+
+def _option_loads():
+    return (
+        selectinload(Product.category),
+        selectinload(Product.addons),
+        selectinload(Product.variant_groups).selectinload(ProductVariantGroup.variants),
+    )
 
 
 def list_available(db: Session, category_slug: str | None = None) -> list[Product]:
     statement = (
         select(Product)
         .join(Product.category)
-        .options(selectinload(Product.category), selectinload(Product.addons))
+        .options(*_option_loads())
         .where(Product.active.is_(True), Category.active.is_(True))
         .order_by(Category.sort_order, Product.sort_order, Product.name)
     )
@@ -22,7 +30,7 @@ def get_available(db: Session, product_id: int) -> Product | None:
     statement = (
         select(Product)
         .join(Product.category)
-        .options(selectinload(Product.category), selectinload(Product.addons))
+        .options(*_option_loads())
         .where(
             Product.id == product_id,
             Product.active.is_(True),
@@ -35,7 +43,7 @@ def get_available(db: Session, product_id: int) -> Product | None:
 def get_by_id(db: Session, product_id: int) -> Product | None:
     statement = (
         select(Product)
-        .options(selectinload(Product.category), selectinload(Product.addons))
+        .options(*_option_loads())
         .where(Product.id == product_id)
     )
     return db.scalar(statement)

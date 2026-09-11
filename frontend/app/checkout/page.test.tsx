@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import CheckoutPage from "./page";
 
-const item = { product_id: 1, name: "Temaki Salmão", quantity: 1, addon_ids: [], addon_names: [], notes: "", unit_total: "29.90" };
+const item = { product_id: 1, name: "Temaki Salmão", quantity: 1, addon_ids: [], addon_names: [], variant_ids: [], variant_names: [], notes: "", unit_total: "29.90" };
 
 beforeEach(() => {
   localStorage.clear();

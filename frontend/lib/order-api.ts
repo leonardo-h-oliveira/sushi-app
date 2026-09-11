@@ -23,6 +23,7 @@ export function cartItemsToOrderItems(items: CartItem[]) {
     product_id: item.product_id,
     quantity: item.quantity,
     addon_ids: item.addon_ids,
+    variant_ids: item.variant_ids ?? [],
     notes: item.notes || null,
   }));
 }

@@ -183,6 +183,49 @@ def test_promotional_price_is_validated_and_exposed(
     )
 
 
+def test_administrator_manages_variants_and_addons(
+    client: TestClient, categories: tuple[Category, Category]
+) -> None:
+    product = client.post(
+        "/admin/products",
+        headers=ADMIN_HEADERS,
+        json={"name": "H2O", "price": "7.90", "category_id": categories[0].id},
+    ).json()
+    group = client.post(
+        f"/admin/products/{product['id']}/variant-groups",
+        headers=ADMIN_HEADERS,
+        json={"name": "Sabor", "required": True},
+    )
+    assert group.status_code == 201
+
+    flavor = client.post(
+        f"/admin/variant-groups/{group.json()['id']}/variants",
+        headers=ADMIN_HEADERS,
+        json={"name": "Limão", "price_delta": "0.00"},
+    )
+    addon = client.post(
+        f"/admin/products/{product['id']}/addons",
+        headers=ADMIN_HEADERS,
+        json={"name": "Gengibre extra", "price_delta": "2.00"},
+    )
+    assert flavor.status_code == 201
+    assert addon.status_code == 201
+
+    product_response = client.get(f"/products/{product['id']}").json()
+    assert product_response["variant_groups"][0]["name"] == "Sabor"
+    assert product_response["variant_groups"][0]["variants"][0]["name"] == "Limão"
+    assert product_response["addons"][0]["name"] == "Gengibre extra"
+
+    deactivated = client.patch(
+        f"/admin/variants/{flavor.json()['id']}",
+        headers=ADMIN_HEADERS,
+        json={"active": False, "name": "Limão zero"},
+    )
+    assert deactivated.status_code == 200
+    assert deactivated.json()["active"] is False
+    assert deactivated.json()["name"] == "Limão zero"
+
+
 def test_product_management_requires_authorization(
     client: TestClient, categories: tuple[Category, Category]
 ) -> None:

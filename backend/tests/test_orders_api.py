@@ -9,7 +9,14 @@ from sqlalchemy.pool import StaticPool
 
 from app.database import get_db
 from app.main import app
-from app.models import Base, Category, Product, ProductAddon
+from app.models import (
+    Base,
+    Category,
+    Product,
+    ProductAddon,
+    ProductVariant,
+    ProductVariantGroup,
+)
 
 
 @pytest.fixture
@@ -87,6 +94,39 @@ def test_pickup_has_no_delivery_fee(client: TestClient, product: Product) -> Non
     assert response.status_code == 201
     assert response.json()["delivery_fee"] == "0.00"
     assert response.json()["total"] == "29.90"
+
+
+def test_required_variant_is_validated_priced_and_snapshotted(
+    client: TestClient, db_session: Session, product: Product
+) -> None:
+    group = ProductVariantGroup(product=product, name="Preparo", required=True)
+    group.variants.extend(
+        [
+            ProductVariant(name="Fresco", price_delta=Decimal("0.00")),
+            ProductVariant(name="Grelhado", price_delta=Decimal("2.00")),
+        ]
+    )
+    db_session.add(group)
+    db_session.commit()
+
+    payload = {
+        "customer_name": "Variantes Teste",
+        "phone": "35999999999",
+        "fulfillment_method": "pickup",
+        "payment_method": "pix",
+        "items": [{"product_id": product.id, "quantity": 1}],
+    }
+    incomplete = client.post("/orders", json=payload)
+    assert incomplete.status_code == 422
+    assert incomplete.json()["detail"] == "Choose an option for: Preparo."
+
+    payload["items"][0]["variant_ids"] = [group.variants[1].id]
+    completed = client.post("/orders", json=payload)
+    assert completed.status_code == 201
+    assert completed.json()["total"] == "31.90"
+    assert completed.json()["items"][0]["variants"] == [
+        {"group_name": "Preparo", "variant_name": "Grelhado", "unit_price": "2.00"}
+    ]
 
 
 def test_invalid_order_data_returns_clear_errors(client: TestClient, product: Product) -> None:

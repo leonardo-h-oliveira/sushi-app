@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.models.address import Address
 from app.models.customer import Customer
-from app.models.order import Order, OrderItem, OrderItemAddon
+from app.models.order import Order, OrderItem, OrderItemAddon, OrderItemVariant
 from app.models.product import Product
 from app.repositories import orders as order_repository
 from app.models.enums import OrderStatus
@@ -31,19 +31,70 @@ def create_order(db: Session, payload: OrderCreate) -> Order:
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="One of the selected products is unavailable.")
         selected_addons = {addon.id: addon for addon in product.addons if addon.active}
         addons = []
-        for addon_id in item_input.addon_ids:
+        for addon_id in set(item_input.addon_ids):
             addon = selected_addons.get(addon_id)
             if addon is None:
                 raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="One of the selected add-ons is unavailable.")
             addons.append(OrderItemAddon(addon_name=addon.name, unit_price=addon.price_delta))
-        unit_price = product.price + sum((addon.unit_price for addon in addons), Decimal("0.00"))
+        variants = _selected_variants(product, item_input.variant_ids)
+        option_total = sum(
+            (option.unit_price for option in [*addons, *variants]), Decimal("0.00")
+        )
+        unit_price = product.price + option_total
         item_total = unit_price * item_input.quantity
         subtotal += item_total
-        order_items.append(OrderItem(product=product, product_name=product.name, quantity=item_input.quantity, unit_price=unit_price, total=item_total, notes=item_input.notes, addons=addons))
+        order_items.append(OrderItem(product=product, product_name=product.name, quantity=item_input.quantity, unit_price=unit_price, total=item_total, notes=item_input.notes, addons=addons, variants=variants))
 
     delivery_fee = DELIVERY_FEE if payload.fulfillment_method.value == "delivery" else Decimal("0.00")
     order = Order(number=_order_number(), customer=customer, address=address, fulfillment_method=payload.fulfillment_method, payment_method=payload.payment_method, notes=payload.notes, subtotal=subtotal, delivery_fee=delivery_fee, total=subtotal + delivery_fee, items=order_items)
     return order_repository.save(db, order)
+
+
+def _selected_variants(product: Product, variant_ids: list[int]) -> list[OrderItemVariant]:
+    if len(variant_ids) != len(set(variant_ids)):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="A product variant cannot be selected more than once.",
+        )
+
+    groups = [group for group in product.variant_groups if group.active]
+    available = {
+        variant.id: (group, variant)
+        for group in groups
+        for variant in group.variants
+        if variant.active
+    }
+    selected_by_group: dict[int, tuple] = {}
+    snapshots: list[OrderItemVariant] = []
+    for variant_id in variant_ids:
+        selection = available.get(variant_id)
+        if selection is None:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="One of the selected product variants is unavailable.",
+            )
+        group, variant = selection
+        if group.id in selected_by_group:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=f"Choose only one option for {group.name}.",
+            )
+        selected_by_group[group.id] = selection
+        snapshots.append(
+            OrderItemVariant(
+                group_name=group.name,
+                variant_name=variant.name,
+                unit_price=variant.price_delta,
+            )
+        )
+
+    missing = [group.name for group in groups if group.required and group.id not in selected_by_group]
+    if missing:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail=f"Choose an option for: {', '.join(missing)}.",
+        )
+    return snapshots
 
 
 def get_order(db: Session, number: str) -> Order:

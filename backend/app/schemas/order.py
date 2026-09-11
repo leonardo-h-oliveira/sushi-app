@@ -22,6 +22,7 @@ class OrderItemInput(BaseModel):
     product_id: int = Field(gt=0)
     quantity: int = Field(gt=0, le=99)
     addon_ids: list[int] = Field(default_factory=list)
+    variant_ids: list[int] = Field(default_factory=list)
     notes: str | None = Field(default=None, max_length=300)
 
 
@@ -41,6 +42,21 @@ class OrderCreate(BaseModel):
         return self
 
 
+class OrderItemAddonResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    addon_name: str
+    unit_price: Decimal
+
+
+class OrderItemVariantResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    group_name: str
+    variant_name: str
+    unit_price: Decimal
+
+
 class OrderItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -49,6 +65,8 @@ class OrderItemResponse(BaseModel):
     unit_price: Decimal
     total: Decimal
     notes: str | None
+    addons: list[OrderItemAddonResponse] = Field(default_factory=list)
+    variants: list[OrderItemVariantResponse] = Field(default_factory=list)
 
 
 class OrderResponse(BaseModel):

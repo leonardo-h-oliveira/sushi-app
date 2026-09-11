@@ -20,12 +20,15 @@ describe("CartPage", () => {
       quantity: 1,
       addon_ids: [],
       addon_names: [],
+      variant_ids: [31],
+      variant_names: ["Preparo: Fresco"],
       notes: "Pouco shoyu",
       unit_total: "29.90",
     }]));
     render(<CartPage />);
 
     expect(await screen.findByText("Temaki Salmão")).toBeInTheDocument();
+    expect(screen.getByText("Preparo: Fresco")).toBeInTheDocument();
     expect(screen.getByText("R$ 34,90")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Aumentar Temaki Salmão" }));
     await waitFor(() => expect(screen.getByText("R$ 64,80")).toBeInTheDocument());

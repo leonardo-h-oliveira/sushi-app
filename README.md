@@ -93,6 +93,15 @@ python backend/seed.py
 The seeder is idempotent: running it again updates the 17 categories and 10
 products instead of creating duplicates.
 
+### Product options
+
+A **variant group** represents one configurable decision, such as Flavor or
+Size. Each group contains variants, and a required group must have exactly one
+selection before the product can be ordered. An **add-on** is an independent,
+optional extra that can be combined with other add-ons. Both option types may
+add to the base price. Orders copy selected option names and prices into
+immutable snapshots, so historical orders remain accurate after menu changes.
+
 Roll back the latest migration:
 
 ```bash
@@ -169,6 +178,12 @@ feat/4-categories-api
 | `DELETE` | `/admin/categories/{id}` | Deactivates a category |
 | `POST` | `/admin/products` | Creates a product |
 | `PATCH` | `/admin/products/{id}` | Updates product data and availability |
+| `POST` | `/admin/products/{id}/variant-groups` | Creates a flavor, size or other single-choice group |
+| `PATCH` | `/admin/variant-groups/{id}` | Edits or deactivates a variant group |
+| `POST` | `/admin/variant-groups/{id}/variants` | Adds a choice to a variant group |
+| `PATCH` | `/admin/variants/{id}` | Edits or deactivates a variant |
+| `POST` | `/admin/products/{id}/addons` | Adds an optional paid extra |
+| `PATCH` | `/admin/addons/{id}` | Edits or deactivates an add-on |
 
 ## Security
 

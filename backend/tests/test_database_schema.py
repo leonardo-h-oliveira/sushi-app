@@ -14,9 +14,12 @@ EXPECTED_TABLES = {
     "categories",
     "customers",
     "order_item_addons",
+    "order_item_variants",
     "order_items",
     "orders",
     "product_addons",
+    "product_variant_groups",
+    "product_variants",
     "products",
 }
 
