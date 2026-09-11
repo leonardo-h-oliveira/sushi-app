@@ -159,6 +159,11 @@ def seed_products(session: Session, categories: dict[str, Category]) -> list[Pro
             session.add(product)
         product.description = str(data["description"])
         product.price = Decimal(str(data["price"]))
+        product.original_price = (
+            Decimal(str(data["original_price"]))
+            if data["original_price"] is not None
+            else None
+        )
         product.sort_order = positions[category_slug]
         product.active = True
         products.append(product)

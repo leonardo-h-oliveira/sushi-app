@@ -14,7 +14,13 @@ if TYPE_CHECKING:
 
 class Product(Base):
     __tablename__ = "products"
-    __table_args__ = (CheckConstraint("price >= 0", name="ck_products_price_non_negative"),)
+    __table_args__ = (
+        CheckConstraint("price >= 0", name="ck_products_price_non_negative"),
+        CheckConstraint(
+            "original_price IS NULL OR original_price > price",
+            name="ck_products_original_price_above_price",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     category_id: Mapped[int] = mapped_column(
@@ -23,6 +29,7 @@ class Product(Base):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     description: Mapped[str] = mapped_column(Text, default="", nullable=False)
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    original_price: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
     image_url: Mapped[str | None] = mapped_column(String(500))
     sort_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -41,6 +48,12 @@ class Product(Base):
         back_populates="product", cascade="all, delete-orphan"
     )
     order_items: Mapped[list["OrderItem"]] = relationship(back_populates="product")
+
+    @property
+    def discount_percent(self) -> int | None:
+        if self.original_price is None:
+            return None
+        return round((1 - self.price / self.original_price) * 100)
 
 
 class ProductAddon(Base):

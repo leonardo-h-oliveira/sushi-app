@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -36,9 +38,24 @@ def update_product(db: Session, product_id: int, payload: ProductUpdate) -> Prod
         _require_category(db, changes["category_id"])
     if "image_url" in changes and changes["image_url"] is not None:
         changes["image_url"] = str(changes["image_url"])
+    _validate_promotional_price(
+        changes.get("price", product.price),
+        changes.get("original_price", product.original_price),
+    )
     for field, value in changes.items():
         setattr(product, field, value)
     return _save(db, product)
+
+
+def _validate_promotional_price(
+    price: Decimal,
+    original_price: Decimal | None,
+) -> None:
+    if original_price is not None and original_price <= price:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="Original price must be greater than the current price.",
+        )
 
 
 def _require_category(db: Session, category_id: int) -> Category:

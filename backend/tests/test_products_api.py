@@ -142,6 +142,47 @@ def test_administrator_can_create_and_update_product(
     assert client.get(f"/products/{product_id}").status_code == 404
 
 
+def test_promotional_price_is_validated_and_exposed(
+    client: TestClient, categories: tuple[Category, Category]
+) -> None:
+    created = client.post(
+        "/admin/products",
+        headers=ADMIN_HEADERS,
+        json={
+            "name": "Temaki Promocional",
+            "price": "24.90",
+            "original_price": "29.90",
+            "category_id": categories[0].id,
+        },
+    )
+
+    assert created.status_code == 201
+    assert created.json()["original_price"] == "29.90"
+    assert created.json()["discount_percent"] == 17
+
+    invalid_create = client.post(
+        "/admin/products",
+        headers=ADMIN_HEADERS,
+        json={
+            "name": "Invalid Promotion",
+            "price": "29.90",
+            "original_price": "24.90",
+            "category_id": categories[0].id,
+        },
+    )
+    assert invalid_create.status_code == 422
+
+    invalid_update = client.patch(
+        f"/admin/products/{created.json()['id']}",
+        headers=ADMIN_HEADERS,
+        json={"price": "35.00"},
+    )
+    assert invalid_update.status_code == 422
+    assert invalid_update.json()["detail"] == (
+        "Original price must be greater than the current price."
+    )
+
+
 def test_product_management_requires_authorization(
     client: TestClient, categories: tuple[Category, Category]
 ) -> None:

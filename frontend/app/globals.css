@@ -66,6 +66,11 @@ h1 em { color: var(--red); font-weight: 400; }
 .product-copy h4 { font-family: Georgia, serif; font-size: 21px; margin: 0 0 7px; }
 .product-copy p { color: var(--ink-soft); display: -webkit-box; font-size: 12px; line-height: 1.6; margin: 0 0 14px; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .product-copy strong { color: var(--red-dark); font-size: 14px; }
+.product-price { align-items: baseline; display: flex; flex-wrap: wrap; gap: 5px 8px; }
+.product-price > span, .detail-price del { color: var(--ink-soft); font-size: 11px; text-decoration: line-through; }
+.product-price em, .detail-price span { background: #dcfce7; border-radius: 999px; color: #166534; font-size: 10px; font-style: normal; font-weight: 800; padding: 3px 7px; }
+.detail-price { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; }
+.detail-price strong { font-size: 22px; }
 .card-arrow { color: var(--red); font-size: 22px; }
 .empty-state, .state-page { align-items: center; display: flex; flex-direction: column; justify-content: center; min-height: 460px; text-align: center; }
 .empty-state span, .state-symbol { border: 1px solid var(--red); border-radius: 50%; color: var(--red); display: grid; font-family: Georgia, serif; font-size: 30px; height: 70px; place-items: center; width: 70px; }
