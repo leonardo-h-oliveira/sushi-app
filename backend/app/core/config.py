@@ -7,6 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def _csv_environment(name: str, default: str) -> tuple[str, ...]:
+    return tuple(
+        value.strip()
+        for value in os.getenv(name, default).split(",")
+        if value.strip()
+    )
+
+
 @dataclass(frozen=True)
 class Settings:
     environment: str = os.getenv("ENVIRONMENT", "development")
@@ -18,6 +26,9 @@ class Settings:
     admin_username: str = os.getenv("ADMIN_USERNAME", "admin")
     admin_password: str = os.getenv("ADMIN_PASSWORD", "local-development-only")
     auth_secret: str = os.getenv("AUTH_SECRET", "local-development-only")
+    cors_origins: tuple[str, ...] = _csv_environment(
+        "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+    )
 
 
 settings = Settings()

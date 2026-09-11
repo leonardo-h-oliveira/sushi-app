@@ -5,7 +5,11 @@ from app.models.category import Category
 
 
 def list_active(db: Session) -> list[Category]:
-    statement = select(Category).where(Category.active.is_(True)).order_by(Category.name)
+    statement = (
+        select(Category)
+        .where(Category.active.is_(True))
+        .order_by(Category.sort_order, Category.name)
+    )
     return list(db.scalars(statement))
 
 
