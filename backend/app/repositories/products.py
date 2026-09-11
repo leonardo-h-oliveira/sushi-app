@@ -11,7 +11,7 @@ def list_available(db: Session, category_slug: str | None = None) -> list[Produc
         .join(Product.category)
         .options(selectinload(Product.category), selectinload(Product.addons))
         .where(Product.active.is_(True), Category.active.is_(True))
-        .order_by(Category.name, Product.name)
+        .order_by(Category.sort_order, Product.sort_order, Product.name)
     )
     if category_slug:
         statement = statement.where(Category.slug == category_slug.lower())

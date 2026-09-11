@@ -84,6 +84,15 @@ Apply the database migrations from the repository root:
 alembic -c backend/alembic.ini upgrade head
 ```
 
+Populate the local database with the initial restaurant menu:
+
+```powershell
+python backend/seed.py
+```
+
+The seeder is idempotent: running it again updates the 17 categories and 10
+products instead of creating duplicates.
+
 Roll back the latest migration:
 
 ```bash
