@@ -51,8 +51,12 @@ export default function AdminMenuPage() {
   }
 
   useEffect(() => {
-    if (token) void load(token);
-  }, [token]); // eslint-disable-line react-hooks/set-state-in-effect
+    if (token) {
+      // Loading remote data is the synchronization this effect performs.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      void load(token);
+    }
+  }, [token]);
 
   async function createCategory(event: FormEvent) {
     event.preventDefault();
