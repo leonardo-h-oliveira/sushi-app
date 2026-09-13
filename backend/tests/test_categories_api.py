@@ -7,11 +7,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.database import get_db
+from app.core.config import settings
 from app.main import app
 from app.models import Base, Category
 
 
-ADMIN_HEADERS = {"X-Admin-Key": "local-development-only"}
+ADMIN_HEADERS = {"X-Admin-Key": settings.admin_api_key}
 
 
 @pytest.fixture

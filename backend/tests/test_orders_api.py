@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.database import get_db
+from app.core.config import settings
 from app.main import app
 from app.models import (
     Base,
@@ -157,7 +158,7 @@ def test_admin_can_list_orders_and_update_status(client: TestClient, product: Pr
             "items": [{"product_id": product.id, "quantity": 1}],
         },
     ).json()
-    headers = {"X-Admin-Key": "local-development-only"}
+    headers = {"X-Admin-Key": settings.admin_api_key}
 
     assert client.get("/orders", headers=headers).json()[0]["customer_name"] == "Staff Test"
     updated = client.patch(

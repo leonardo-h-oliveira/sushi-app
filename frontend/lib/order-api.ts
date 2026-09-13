@@ -5,7 +5,17 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.API_URL ?? "http:
 export interface OrderResult {
   number: string;
   status: string;
+  fulfillment_method: "delivery" | "pickup";
+  payment_method: "pix" | "card_on_delivery" | "cash";
+  subtotal: string;
+  delivery_fee: string;
   total: string;
+  items: Array<{
+    product_name: string;
+    quantity: number;
+    unit_price: string;
+    total: string;
+  }>;
 }
 
 export async function createOrder(payload: Record<string, unknown>): Promise<OrderResult> {
