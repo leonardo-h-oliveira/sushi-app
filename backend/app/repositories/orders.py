@@ -21,6 +21,7 @@ def list_orders(db: Session) -> list[Order]:
 def _loads():
     return (
         selectinload(Order.items).selectinload(OrderItem.addons),
+        selectinload(Order.items).selectinload(OrderItem.variants),
         selectinload(Order.customer),
         selectinload(Order.address),
     )

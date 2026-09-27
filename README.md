@@ -4,7 +4,7 @@ A mobile-first ordering application for Sushi Poços. The MVP allows customers t
 
 ## Project status
 
-The MVP is implemented and covered by automated backend and frontend checks. The backend exposes database-backed catalog, authentication, order and administration APIs. The frontend includes the customer menu, product details, cart, checkout, order tracking, staff order management and menu management screens.
+The MVP feature set is implemented and is currently in release validation. Automated backend and frontend checks cover the main rules, but the version is considered complete only after the end-to-end flow, mobile checks and staging deployment pass the [release checklist](docs/release-checklist.md).
 
 The initial database schema and its reversible Alembic migrations are available. Public catalog endpoints only expose active products from active categories.
 
@@ -18,6 +18,7 @@ The initial database schema and its reversible Alembic migrations are available.
 - **Version control and CI:** Git, GitHub and GitHub Actions
 
 The detailed technical boundaries and request flows are documented in [docs/architecture.md](docs/architecture.md).
+The decision to use a dedicated FastAPI backend instead of the initially proposed Supabase architecture is recorded in [ADR 001](docs/adr-001-backend-architecture.md).
 
 ## Repository structure
 
@@ -32,9 +33,12 @@ sushi-app/
 |   |-- requirements.txt
 |   `-- requirements-dev.txt
 |-- docs/
-|   `-- architecture.md
+|   |-- architecture.md
+|   |-- release-checklist.md
+|   `-- staging-deployment.md
 |-- frontend/
 |-- .github/workflows/ci.yml
+|-- render.yaml
 |-- pytest.ini
 `-- README.md
 ```
@@ -43,8 +47,8 @@ sushi-app/
 
 ### Requirements
 
-- Python 3.13+
-- Node.js 24+
+- Python 3.12+
+- Node.js 22+
 - pnpm 10+
 - Git
 
@@ -93,6 +97,15 @@ python backend/seed.py
 The seeder is idempotent: running it again updates the 17 categories and 10
 products instead of creating duplicates.
 
+### Product options
+
+A **variant group** represents one configurable decision, such as Flavor or
+Size. Each group contains variants, and a required group must have exactly one
+selection before the product can be ordered. An **add-on** is an independent,
+optional extra that can be combined with other add-ons. Both option types may
+add to the base price. Orders copy selected option names and prices into
+immutable snapshots, so historical orders remain accurate after menu changes.
+
 Roll back the latest migration:
 
 ```bash
@@ -136,6 +149,18 @@ pnpm --dir frontend exec next build
 
 GitHub Actions runs the backend tests, frontend tests, ESLint and the production build for every pull request and every push to `main`.
 
+## Staging deployment
+
+The repository includes a Render Blueprint for the FastAPI service. Staging
+uses an external Neon PostgreSQL database, while the Next.js application is
+deployed as a separate Vercel project with `frontend` as its root directory.
+Follow the complete, ordered instructions in
+[docs/staging-deployment.md](docs/staging-deployment.md).
+
+Creating the infrastructure is intentionally a manual, reviewed step: the
+platforms require account access and the database plan must be confirmed before
+any resource is provisioned.
+
 ## Development workflow
 
 Each change follows this workflow:
@@ -165,10 +190,18 @@ feat/4-categories-api
 | `GET` | `/orders` | Lists orders for authenticated staff |
 | `PATCH` | `/orders/{number}/status` | Updates an order status for authenticated staff |
 | `POST` | `/admin/categories` | Creates a category |
+| `GET` | `/admin/categories` | Lists active and inactive categories for staff |
 | `PATCH` | `/admin/categories/{id}` | Renames or updates a category |
 | `DELETE` | `/admin/categories/{id}` | Deactivates a category |
 | `POST` | `/admin/products` | Creates a product |
+| `GET` | `/admin/products` | Lists active and inactive products for staff |
 | `PATCH` | `/admin/products/{id}` | Updates product data and availability |
+| `POST` | `/admin/products/{id}/variant-groups` | Creates a flavor, size or other single-choice group |
+| `PATCH` | `/admin/variant-groups/{id}` | Edits or deactivates a variant group |
+| `POST` | `/admin/variant-groups/{id}/variants` | Adds a choice to a variant group |
+| `PATCH` | `/admin/variants/{id}` | Edits or deactivates a variant |
+| `POST` | `/admin/products/{id}/addons` | Adds an optional paid extra |
+| `PATCH` | `/admin/addons/{id}` | Edits or deactivates an add-on |
 
 ## Security
 

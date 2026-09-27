@@ -95,6 +95,9 @@ class OrderItem(Base):
     addons: Mapped[list["OrderItemAddon"]] = relationship(
         back_populates="order_item", cascade="all, delete-orphan"
     )
+    variants: Mapped[list["OrderItemVariant"]] = relationship(
+        back_populates="order_item", cascade="all, delete-orphan"
+    )
 
 
 class OrderItemAddon(Base):
@@ -113,3 +116,24 @@ class OrderItemAddon(Base):
     unit_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
     order_item: Mapped["OrderItem"] = relationship(back_populates="addons")
+
+
+class OrderItemVariant(Base):
+    """Immutable snapshot of a selected product variant."""
+
+    __tablename__ = "order_item_variants"
+    __table_args__ = (
+        CheckConstraint(
+            "unit_price >= 0", name="ck_order_item_variants_unit_price_non_negative"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    order_item_id: Mapped[int] = mapped_column(
+        ForeignKey("order_items.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    group_name: Mapped[str] = mapped_column(String(80), nullable=False)
+    variant_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    unit_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+
+    order_item: Mapped["OrderItem"] = relationship(back_populates="variants")

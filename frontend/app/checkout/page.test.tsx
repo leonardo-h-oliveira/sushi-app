@@ -3,12 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import CheckoutPage from "./page";
 
-const item = { product_id: 1, name: "Temaki Salmão", quantity: 1, addon_ids: [], addon_names: [], notes: "", unit_total: "29.90" };
+const item = { product_id: 1, name: "Temaki Salmão", quantity: 1, addon_ids: [], addon_names: [], variant_ids: [], variant_names: [], notes: "", unit_total: "29.90" };
 
 beforeEach(() => {
   localStorage.clear();
   localStorage.setItem("sushi-cart", JSON.stringify([item]));
-  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ number: "SP260908-ABC123", status: "received", total: "34.90" }) }));
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ number: "SP260908-ABC123", status: "received", fulfillment_method: "pickup", payment_method: "pix", subtotal: "29.90", delivery_fee: "0.00", total: "29.90", items: [{ product_name: "Temaki Salmão", quantity: 1, unit_price: "29.90", total: "29.90" }] }) }));
 });
 
 describe("CheckoutPage", () => {
@@ -34,5 +34,7 @@ describe("CheckoutPage", () => {
 
     await waitFor(() => expect(screen.getByRole("heading", { name: "Obrigado por pedir com a gente." })).toBeInTheDocument());
     expect(localStorage.getItem("last-order-number")).toBe("SP260908-ABC123");
+    expect(screen.getByRole("region", { name: "Resumo do pedido" })).toHaveTextContent("Temaki Salmão");
+    expect(screen.getByRole("region", { name: "Resumo do pedido" })).toHaveTextContent("R$ 29,90");
   });
 });

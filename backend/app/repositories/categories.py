@@ -13,6 +13,10 @@ def list_active(db: Session) -> list[Category]:
     return list(db.scalars(statement))
 
 
+def list_all(db: Session) -> list[Category]:
+    return list(db.scalars(select(Category).order_by(Category.sort_order, Category.name)))
+
+
 def get_by_id(db: Session, category_id: int) -> Category | None:
     return db.get(Category, category_id)
 

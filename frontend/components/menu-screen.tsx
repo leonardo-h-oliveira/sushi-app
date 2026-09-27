@@ -18,6 +18,7 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedAddons, setSelectedAddons] = useState<number[]>([]);
+  const [selectedVariants, setSelectedVariants] = useState<Record<number, number>>({});
   const [notes, setNotes] = useState("");
   const [cartNotice, setCartNotice] = useState("");
   const populatedCategories = categories.filter((category) =>
@@ -29,14 +30,22 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
       .reduce((total, addon) => total + Number(addon.price_delta), 0) ?? 0,
     [selectedAddons, selectedProduct],
   );
+  const selectedVariantTotal = useMemo(
+    () => selectedProduct?.variant_groups
+      .flatMap((group) => group.variants)
+      .filter((variant) => Object.values(selectedVariants).includes(variant.id))
+      .reduce((total, variant) => total + Number(variant.price_delta), 0) ?? 0,
+    [selectedProduct, selectedVariants],
+  );
   const selectedTotal = selectedProduct
-    ? (Number(selectedProduct.price) + selectedAddonTotal) * quantity
+    ? (Number(selectedProduct.price) + selectedAddonTotal + selectedVariantTotal) * quantity
     : 0;
 
   function openProduct(product: Product) {
     setSelectedProduct(product);
     setQuantity(1);
     setSelectedAddons([]);
+    setSelectedVariants({});
     setNotes("");
     setCartNotice("");
   }
@@ -49,6 +58,19 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
 
   function addConfiguredItem() {
     if (!selectedProduct) return;
+    const activeGroups = selectedProduct.variant_groups.filter((group) => group.active);
+    const missingGroup = activeGroups.find(
+      (group) => group.required && !selectedVariants[group.id],
+    );
+    if (missingGroup) {
+      setCartNotice(`Escolha uma opção de ${missingGroup.name}.`);
+      return;
+    }
+    const selectedVariantItems = activeGroups.flatMap((group) =>
+      group.variants
+        .filter((variant) => variant.active && selectedVariants[group.id] === variant.id)
+        .map((variant) => ({ group, variant })),
+    );
     const currentCart = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]") as unknown[];
     currentCart.push({
       product_id: selectedProduct.id,
@@ -58,8 +80,14 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
       addon_names: selectedProduct.addons
         .filter((addon) => selectedAddons.includes(addon.id))
         .map((addon) => addon.name),
+      variant_ids: selectedVariantItems.map(({ variant }) => variant.id),
+      variant_names: selectedVariantItems.map(
+        ({ group, variant }) => `${group.name}: ${variant.name}`,
+      ),
       notes: notes.trim(),
-      unit_total: (Number(selectedProduct.price) + selectedAddonTotal).toFixed(2),
+      unit_total: (
+        Number(selectedProduct.price) + selectedAddonTotal + selectedVariantTotal
+      ).toFixed(2),
     });
     localStorage.setItem("sushi-cart", JSON.stringify(currentCart));
     setCartNotice("Item adicionado ao seu pedido.");
@@ -195,6 +223,39 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
                 ))}
               </fieldset>
             )}
+
+            {selectedProduct.variant_groups
+              .filter((group) => group.active && group.variants.some((variant) => variant.active))
+              .map((group) => (
+                <fieldset className="addons-fieldset" key={group.id}>
+                  <legend>
+                    {group.name}{group.required ? " *" : " (opcional)"}
+                  </legend>
+                  {group.variants.filter((variant) => variant.active).map((variant) => (
+                    <label className="addon-option" key={variant.id}>
+                      <input
+                        type="radio"
+                        name={`variant-group-${group.id}`}
+                        required={group.required}
+                        checked={selectedVariants[group.id] === variant.id}
+                        onChange={() => {
+                          setSelectedVariants((current) => ({
+                            ...current,
+                            [group.id]: variant.id,
+                          }));
+                          setCartNotice("");
+                        }}
+                      />
+                      <span>{variant.name}</span>
+                      <strong>
+                        {Number(variant.price_delta) > 0
+                          ? `+ ${money.format(Number(variant.price_delta))}`
+                          : "Incluso"}
+                      </strong>
+                    </label>
+                  ))}
+                </fieldset>
+              ))}
 
             <label className="notes-field">Observações (opcional)
               <textarea value={notes} maxLength={180} onChange={(event) => setNotes(event.target.value)} placeholder="Ex.: pouco shoyu, sem cebolinha..." />

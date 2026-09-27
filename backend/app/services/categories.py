@@ -18,20 +18,27 @@ def list_active_categories(db: Session) -> list[Category]:
     return category_repository.list_active(db)
 
 
+def list_all_categories(db: Session) -> list[Category]:
+    return category_repository.list_all(db)
+
+
 def create_category(db: Session, name: str) -> Category:
     slug = slugify(name)
     _ensure_unique(db, name, slug)
     return _save(db, Category(name=name, slug=slug))
 
 
-def update_category(db: Session, category_id: int, name: str) -> Category:
+def update_category(db: Session, category_id: int, payload) -> Category:
     category = _get_or_404(db, category_id)
-    slug = slugify(name)
-    duplicate = category_repository.get_by_name_or_slug(db, name, slug)
-    if duplicate and duplicate.id != category.id:
-        _raise_duplicate()
-    category.name = name
-    category.slug = slug
+    if payload.name is not None:
+        slug = slugify(payload.name)
+        duplicate = category_repository.get_by_name_or_slug(db, payload.name, slug)
+        if duplicate and duplicate.id != category.id:
+            _raise_duplicate()
+        category.name = payload.name
+        category.slug = slug
+    if payload.active is not None:
+        category.active = payload.active
     return _save(db, category)
 
 

@@ -5,7 +5,13 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.core.security import require_admin
-from app.schemas.order import AddressInput, OrderCreate, OrderResponse, OrderStatusUpdate
+from app.schemas.order import (
+    AddressInput,
+    OrderCreate,
+    OrderResponse,
+    OrderStatusUpdate,
+    PublicOrderResponse,
+)
 from app.services import orders as order_service
 
 
@@ -18,9 +24,9 @@ def create_order(payload: OrderCreate, db: DatabaseSession):
     return _response(order_service.create_order(db, payload))
 
 
-@router.get("/{number}", response_model=OrderResponse)
+@router.get("/{number}", response_model=PublicOrderResponse)
 def get_order(number: str, db: DatabaseSession):
-    return _response(order_service.get_order(db, number))
+    return order_service.get_order(db, number)
 
 
 @router.get("", response_model=list[OrderResponse], dependencies=[Depends(require_admin)])

@@ -16,6 +16,7 @@ export interface Product {
   active: boolean;
   category: Pick<Category, "id" | "name" | "slug">;
   addons: ProductAddon[];
+  variant_groups: ProductVariantGroup[];
 }
 
 export interface ProductAddon {
@@ -23,4 +24,14 @@ export interface ProductAddon {
   name: string;
   price_delta: string;
   active: boolean;
+}
+
+export type ProductVariant = ProductAddon;
+
+export interface ProductVariantGroup {
+  id: number;
+  name: string;
+  required: boolean;
+  active: boolean;
+  variants: ProductVariant[];
 }

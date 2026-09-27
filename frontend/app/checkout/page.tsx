@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import type { CartItem } from "@/types/cart";
 import { cartItemsToOrderItems, createOrder } from "@/lib/order-api";
+import type { OrderResult } from "@/lib/order-api";
 
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const DELIVERY_FEE = 5;
@@ -20,7 +21,7 @@ export default function CheckoutPage() {
   const [changeFor, setChangeFor] = useState("");
   const [error, setError] = useState("");
   const [confirmed, setConfirmed] = useState(false);
-  const [orderNumber, setOrderNumber] = useState("");
+  const [confirmedOrder, setConfirmedOrder] = useState<OrderResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function CheckoutPage() {
       });
       localStorage.setItem("last-order-number", order.number);
       localStorage.removeItem("sushi-cart");
-      setOrderNumber(order.number);
+      setConfirmedOrder(order);
       setError("");
       setConfirmed(true);
     } catch (requestError) {
@@ -68,7 +69,8 @@ export default function CheckoutPage() {
   }
 
   if (confirmed) {
-    return <main className="state-page"><span className="state-symbol" aria-hidden="true">✓</span><p className="eyebrow">Pedido confirmado</p><h1>Obrigado por pedir com a gente.</h1><p>Seu número é <strong>{orderNumber}</strong>. Acompanhe o preparo do seu pedido.</p><Link className="primary-button" href={`/orders/${orderNumber}`}>Acompanhar pedido →</Link></main>;
+    if (!confirmedOrder) return null;
+    return <main className="state-page"><span className="state-symbol" aria-hidden="true">✓</span><p className="eyebrow">Pedido confirmado</p><h1>Obrigado por pedir com a gente.</h1><p>Seu número é <strong>{confirmedOrder.number}</strong>.</p><section className="order-confirmation" aria-label="Resumo do pedido"><ul>{confirmedOrder.items.map((item, index) => <li key={`${item.product_name}-${index}`}>{item.quantity}× {item.product_name} — {money.format(Number(item.total))}</li>)}</ul><p>Recebimento: <strong>{confirmedOrder.fulfillment_method === "delivery" ? "Entrega" : "Retirada"}</strong></p><p>Pagamento: <strong>{confirmedOrder.payment_method === "pix" ? "PIX" : confirmedOrder.payment_method === "cash" ? "Dinheiro" : "Cartão na entrega"}</strong></p><p>Status: <strong>Recebido</strong></p><p>Total: <strong>{money.format(Number(confirmedOrder.total))}</strong></p></section><Link className="primary-button" href={`/orders/${confirmedOrder.number}`}>Acompanhar pedido →</Link></main>;
   }
 
   if (items.length === 0) {

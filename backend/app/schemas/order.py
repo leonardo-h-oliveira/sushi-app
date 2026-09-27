@@ -22,6 +22,7 @@ class OrderItemInput(BaseModel):
     product_id: int = Field(gt=0)
     quantity: int = Field(gt=0, le=99)
     addon_ids: list[int] = Field(default_factory=list)
+    variant_ids: list[int] = Field(default_factory=list)
     notes: str | None = Field(default=None, max_length=300)
 
 
@@ -41,6 +42,21 @@ class OrderCreate(BaseModel):
         return self
 
 
+class OrderItemAddonResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    addon_name: str
+    unit_price: Decimal
+
+
+class OrderItemVariantResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    group_name: str
+    variant_name: str
+    unit_price: Decimal
+
+
 class OrderItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -49,6 +65,8 @@ class OrderItemResponse(BaseModel):
     unit_price: Decimal
     total: Decimal
     notes: str | None
+    addons: list[OrderItemAddonResponse] = Field(default_factory=list)
+    variants: list[OrderItemVariantResponse] = Field(default_factory=list)
 
 
 class OrderResponse(BaseModel):
@@ -76,6 +94,22 @@ class OrderResponse(BaseModel):
         data.address = AddressInput.model_validate(order.address) if order.address else None
         data.notes = order.notes
         return data
+
+
+class PublicOrderResponse(BaseModel):
+    """Order tracking data that is safe to expose without staff authentication."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    number: str
+    status: OrderStatus
+    fulfillment_method: FulfillmentMethod
+    payment_method: PaymentMethod
+    subtotal: Decimal
+    delivery_fee: Decimal
+    total: Decimal
+    created_at: datetime
+    items: list[OrderItemResponse]
 
 
 class OrderStatusUpdate(BaseModel):

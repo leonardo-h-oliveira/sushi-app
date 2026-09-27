@@ -66,6 +66,7 @@ export default function CartPage() {
               {items.map((item, index) => (
                 <article className="cart-item" key={`${item.product_id}-${index}`}>
                   <div><h2>{item.name}</h2>
+                    {item.variant_names?.length > 0 && <p>{item.variant_names.join(" · ")}</p>}
                     {item.addon_names?.length > 0 && <p>+ {item.addon_names.join(", ")}</p>}
                     {item.notes && <p>“{item.notes}”</p>}
                   </div>
