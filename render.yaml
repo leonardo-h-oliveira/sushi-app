@@ -8,15 +8,14 @@ services:
     startCommand: alembic -c backend/alembic.ini upgrade head && uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     autoDeployTrigger: commit
+    initialDeployHook: python backend/seed.py
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.11
       - key: ENVIRONMENT
         value: staging
       - key: DATABASE_URL
-        fromDatabase:
-          name: sushi-db-staging
-          property: connectionString
+        sync: false
       - key: AUTH_SECRET
         generateValue: true
       - key: ADMIN_API_KEY
@@ -27,11 +26,4 @@ services:
         sync: false
       - key: CORS_ORIGINS
         sync: false
-
-databases:
-  - name: sushi-db-staging
-    plan: free
-    region: ohio
-    databaseName: sushi_app
-    user: sushi_app
 
