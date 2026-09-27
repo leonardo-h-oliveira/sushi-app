@@ -33,9 +33,12 @@ sushi-app/
 |   |-- requirements.txt
 |   `-- requirements-dev.txt
 |-- docs/
-|   `-- architecture.md
+|   |-- architecture.md
+|   |-- release-checklist.md
+|   `-- staging-deployment.md
 |-- frontend/
 |-- .github/workflows/ci.yml
+|-- render.yaml
 |-- pytest.ini
 `-- README.md
 ```
@@ -145,6 +148,17 @@ pnpm --dir frontend exec next build
 ```
 
 GitHub Actions runs the backend tests, frontend tests, ESLint and the production build for every pull request and every push to `main`.
+
+## Staging deployment
+
+The repository includes a Render Blueprint for the FastAPI service and its
+PostgreSQL database. The Next.js application is deployed as a separate Vercel
+project with `frontend` as its root directory. Follow the complete, ordered
+instructions in [docs/staging-deployment.md](docs/staging-deployment.md).
+
+Creating the infrastructure is intentionally a manual, reviewed step: the
+platforms require account access and the database plan must be confirmed before
+any resource is provisioned.
 
 ## Development workflow
 
