@@ -21,6 +21,10 @@ def list_available_products(db: Session, category_slug: str | None) -> list[Prod
     return product_repository.list_available(db, category_slug)
 
 
+def list_all_products(db: Session) -> list[Product]:
+    return product_repository.list_all(db)
+
+
 def get_available_product(db: Session, product_id: int) -> Product:
     product = product_repository.get_available(db, product_id)
     if product is None:

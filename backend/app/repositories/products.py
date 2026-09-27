@@ -26,6 +26,16 @@ def list_available(db: Session, category_slug: str | None = None) -> list[Produc
     return list(db.scalars(statement))
 
 
+def list_all(db: Session) -> list[Product]:
+    statement = (
+        select(Product)
+        .join(Product.category)
+        .options(*_option_loads())
+        .order_by(Category.sort_order, Product.sort_order, Product.name)
+    )
+    return list(db.scalars(statement))
+
+
 def get_available(db: Session, product_id: int) -> Product | None:
     statement = (
         select(Product)

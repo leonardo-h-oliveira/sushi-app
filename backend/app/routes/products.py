@@ -33,6 +33,11 @@ def list_products(
     return product_service.list_available_products(db, category)
 
 
+@router.get("/admin/products", response_model=list[ProductResponse])
+def list_all_products(db: DatabaseSession, _: Administrator):
+    return product_service.list_all_products(db)
+
+
 @router.get("/products/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int, db: DatabaseSession):
     return product_service.get_available_product(db, product_id)

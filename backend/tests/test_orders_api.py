@@ -78,6 +78,10 @@ def test_valid_checkout_creates_order_and_status_can_be_retrieved(
     retrieved = client.get(f"/orders/{order['number']}")
     assert retrieved.status_code == 200
     assert retrieved.json()["total"] == "71.80"
+    assert "customer_name" not in retrieved.json()
+    assert "phone" not in retrieved.json()
+    assert "address" not in retrieved.json()
+    assert "notes" not in retrieved.json()
 
 
 def test_pickup_has_no_delivery_fee(client: TestClient, product: Product) -> None:

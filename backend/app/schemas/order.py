@@ -96,5 +96,21 @@ class OrderResponse(BaseModel):
         return data
 
 
+class PublicOrderResponse(BaseModel):
+    """Order tracking data that is safe to expose without staff authentication."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    number: str
+    status: OrderStatus
+    fulfillment_method: FulfillmentMethod
+    payment_method: PaymentMethod
+    subtotal: Decimal
+    delivery_fee: Decimal
+    total: Decimal
+    created_at: datetime
+    items: list[OrderItemResponse]
+
+
 class OrderStatusUpdate(BaseModel):
     status: OrderStatus

@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
 
-type Category = { id: number; name: string; slug: string };
+type Category = { id: number; name: string; slug: string; active: boolean };
 type ProductOption = { id: number; name: string; price_delta: string; active: boolean };
 type VariantGroup = {
   id: number;
@@ -20,8 +20,9 @@ type Product = {
   original_price: string | null;
   discount_percent: number | null;
   description: string;
+  image_url: string | null;
   active: boolean;
-  category: Category;
+  category: Pick<Category, "id" | "name" | "slug">;
   addons: ProductOption[];
   variant_groups: VariantGroup[];
 };
@@ -46,12 +47,14 @@ export default function AdminMenuPage() {
   const [groupForm, setGroupForm] = useState({ product_id: "", name: "", required: true });
   const [variantForm, setVariantForm] = useState({ group_id: "", name: "", price_delta: "" });
   const [addonForm, setAddonForm] = useState({ product_id: "", name: "", price_delta: "" });
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   async function load(session: string) {
     const headers = { Authorization: `Bearer ${session}` };
     const [cats, items] = await Promise.all([
-      fetch(`${API_URL}/categories`, { headers }),
-      fetch(`${API_URL}/products`, { headers }),
+      fetch(`${API_URL}/admin/categories`, { headers }),
+      fetch(`${API_URL}/admin/products`, { headers }),
     ]);
     if (cats.status === 401 || items.status === 401) {
       localStorage.removeItem("admin-token");
@@ -87,6 +90,32 @@ export default function AdminMenuPage() {
     void load(token);
   }
 
+  async function updateCategory(event: FormEvent) {
+    event.preventDefault();
+    if (!token || !editingCategory) return;
+    const response = await fetch(`${API_URL}/admin/categories/${editingCategory.id}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editingCategory.name }),
+    });
+    if (!response.ok) return setError("Não foi possível atualizar a categoria.");
+    setEditingCategory(null);
+    setError("");
+    void load(token);
+  }
+
+  async function setCategoryActive(item: Category) {
+    if (!token || (item.active && !window.confirm("Desativar esta categoria e ocultar seus produtos do cardápio?"))) return;
+    const response = await fetch(`${API_URL}/admin/categories/${item.id}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !item.active }),
+    });
+    if (!response.ok) return setError("Não foi possível desativar a categoria.");
+    setError("");
+    void load(token);
+  }
+
   async function createProduct(event: FormEvent) {
     event.preventDefault();
     if (!token) return;
@@ -105,6 +134,28 @@ export default function AdminMenuPage() {
       return;
     }
     setProduct(EMPTY_PRODUCT);
+    void load(token);
+  }
+
+  async function updateProduct(event: FormEvent) {
+    event.preventDefault();
+    if (!token || !editingProduct) return;
+    const response = await fetch(`${API_URL}/admin/products/${editingProduct.id}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: editingProduct.name,
+        description: editingProduct.description,
+        price: Number(editingProduct.price),
+        original_price: editingProduct.original_price ? Number(editingProduct.original_price) : null,
+        image_url: editingProduct.image_url || null,
+        category_id: editingProduct.category.id,
+        active: editingProduct.active,
+      }),
+    });
+    if (!response.ok) return setError("Não foi possível atualizar o produto. Confira preço e campos.");
+    setEditingProduct(null);
+    setError("");
     void load(token);
   }
 
@@ -200,6 +251,17 @@ export default function AdminMenuPage() {
             placeholder="Category name"
           />
           <button className="rounded-xl bg-slate-950 px-4 py-3 font-bold text-white">Save category</button>
+          <div className="space-y-2 border-t pt-4">
+            {categories.map((item) => (
+              <div className="flex items-center justify-between gap-2" key={item.id}>
+                <span>{item.name}</span>
+                <span className="flex gap-2">
+                  <button type="button" className="text-sm font-bold underline" onClick={() => setEditingCategory(item)}>Editar</button>
+                  <button type="button" className="text-sm font-bold text-red-700 underline" onClick={() => void setCategoryActive(item)}>{item.active ? "Desativar" : "Ativar"}</button>
+                </span>
+              </div>
+            ))}
+          </div>
         </form>
         <form onSubmit={createProduct} className="space-y-3 rounded-2xl bg-white p-5 shadow-sm">
           <h2 className="text-xl font-black">New product</h2>
@@ -252,6 +314,28 @@ export default function AdminMenuPage() {
           <button className="rounded-xl bg-slate-950 px-4 py-3 font-bold text-white">Save product</button>
         </form>
       </section>
+      {editingCategory && (
+        <form onSubmit={updateCategory} className="mt-8 flex flex-wrap items-end gap-3 rounded-2xl bg-white p-5 shadow-sm">
+          <label className="min-w-64 flex-1 font-bold">Editar categoria<input required minLength={2} value={editingCategory.name} onChange={(event) => setEditingCategory({ ...editingCategory, name: event.target.value })} className="mt-2 w-full rounded-xl border p-3" /></label>
+          <button className="rounded-xl bg-slate-950 px-4 py-3 font-bold text-white">Salvar alterações</button>
+          <button type="button" className="rounded-xl border px-4 py-3 font-bold" onClick={() => setEditingCategory(null)}>Cancelar</button>
+        </form>
+      )}
+      {editingProduct && (
+        <form onSubmit={updateProduct} className="mt-8 space-y-4 rounded-2xl bg-white p-5 shadow-sm">
+          <h2 className="text-xl font-black">Editar produto</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            <label>Nome<input required minLength={2} value={editingProduct.name} onChange={(event) => setEditingProduct({ ...editingProduct, name: event.target.value })} className="mt-1 w-full rounded-xl border p-3" /></label>
+            <label>Categoria<select value={editingProduct.category.id} onChange={(event) => setEditingProduct({ ...editingProduct, category: categories.find((item) => item.id === Number(event.target.value)) ?? editingProduct.category })} className="mt-1 w-full rounded-xl border p-3">{categories.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+            <label>Preço atual<input required type="number" step="0.01" min="0" value={editingProduct.price} onChange={(event) => setEditingProduct({ ...editingProduct, price: event.target.value })} className="mt-1 w-full rounded-xl border p-3" /></label>
+            <label>Preço original<input type="number" step="0.01" min="0" value={editingProduct.original_price ?? ""} onChange={(event) => setEditingProduct({ ...editingProduct, original_price: event.target.value || null })} className="mt-1 w-full rounded-xl border p-3" /></label>
+            <label className="md:col-span-2">URL da imagem<input type="url" value={editingProduct.image_url ?? ""} onChange={(event) => setEditingProduct({ ...editingProduct, image_url: event.target.value || null })} className="mt-1 w-full rounded-xl border p-3" /></label>
+            <label className="md:col-span-2">Descrição<textarea value={editingProduct.description} onChange={(event) => setEditingProduct({ ...editingProduct, description: event.target.value })} className="mt-1 w-full rounded-xl border p-3" /></label>
+          </div>
+          <label className="flex items-center gap-2"><input type="checkbox" checked={editingProduct.active} onChange={(event) => setEditingProduct({ ...editingProduct, active: event.target.checked })} /> Produto disponível no cardápio</label>
+          <div className="flex gap-3"><button className="rounded-xl bg-slate-950 px-4 py-3 font-bold text-white">Salvar alterações</button><button type="button" className="rounded-xl border px-4 py-3 font-bold" onClick={() => setEditingProduct(null)}>Cancelar</button></div>
+        </form>
+      )}
       <section className="mt-8 rounded-2xl bg-white p-5 shadow-sm">
         <h2 className="mb-2 text-xl font-black">Product options</h2>
         <p className="mb-5 text-sm text-slate-600">
@@ -307,6 +391,7 @@ export default function AdminMenuPage() {
                 )}
               </div>
               <p className="text-sm text-slate-600">{item.description}</p>
+              <button type="button" className="mt-3 rounded-lg border px-3 py-2 text-sm font-bold" onClick={() => setEditingProduct(item)}>Editar produto</button>
               {item.variant_groups.map((group) => (
                 <div className="mt-3 border-t pt-2 text-xs" key={group.id}>
                   <button type="button" className="font-bold underline" onClick={() => void saveOption(`/admin/variant-groups/${group.id}`, "PATCH", { active: !group.active })}>

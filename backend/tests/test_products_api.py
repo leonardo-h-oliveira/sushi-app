@@ -141,6 +141,9 @@ def test_administrator_can_create_and_update_product(
     assert updated.json()["price"] == "62.50"
     assert updated.json()["active"] is False
     assert client.get(f"/products/{product_id}").status_code == 404
+    managed = client.get("/admin/products", headers=ADMIN_HEADERS)
+    assert managed.status_code == 200
+    assert managed.json()[0]["active"] is False
 
 
 def test_promotional_price_is_validated_and_exposed(

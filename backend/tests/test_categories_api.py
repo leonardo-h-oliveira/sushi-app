@@ -84,6 +84,18 @@ def test_administrator_can_create_update_and_deactivate_category(
     assert deactivated.status_code == 204
     assert client.get("/categories").json() == []
 
+    admin_categories = client.get("/admin/categories", headers=ADMIN_HEADERS)
+    assert admin_categories.status_code == 200
+    assert admin_categories.json()[0]["active"] is False
+
+    reactivated = client.patch(
+        f"/admin/categories/{category_id}",
+        headers=ADMIN_HEADERS,
+        json={"active": True},
+    )
+    assert reactivated.status_code == 200
+    assert client.get("/categories").json()[0]["name"] == "Temakis Premium"
+
 
 def test_management_requires_valid_administrator_key(client: TestClient) -> None:
     missing = client.post("/admin/categories", json={"name": "Combos"})
