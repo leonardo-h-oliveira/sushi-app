@@ -117,8 +117,7 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
           <a className="primary-button" href="#menu">Explorar o cardápio <span aria-hidden="true">↓</span></a>
         </div>
         <div className="hero-art" aria-hidden="true">
-          <span className="sun" />
-          <div className="plate"><span /><span /><span /></div>
+          <span className="hero-logo" />
           <p>Poços de Caldas<br />Minas Gerais</p>
         </div>
       </section>
