@@ -1,0 +1,940 @@
+{
+  "source_url": "https://sushi-pocos.ola.click/products",
+  "imported_at": "2026-10-05",
+  "categories": [
+    {
+      "name": "Sushis Tradicionais",
+      "slug": "sushis-tradicionais"
+    },
+    {
+      "name": "Sushis Variados Gourmet",
+      "slug": "sushis-variados-gourmet"
+    },
+    {
+      "name": "Yakisoba",
+      "slug": "yakisoba"
+    },
+    {
+      "name": "Hot Rolls Variados Premium",
+      "slug": "hot-rolls-variados-premium"
+    },
+    {
+      "name": "Niguiris Variados",
+      "slug": "niguiris-variados"
+    },
+    {
+      "name": "Joys Variados Premium",
+      "slug": "joys-variados-premium"
+    },
+    {
+      "name": "Temakis Variados Premium",
+      "slug": "temakis-variados-premium"
+    },
+    {
+      "name": "Pokes Variados Premium",
+      "slug": "pokes-variados-premium"
+    },
+    {
+      "name": "Sashimis de Salmão Poços",
+      "slug": "sashimis-de-salmao-pocos"
+    },
+    {
+      "name": "Uramakis Variados Premium",
+      "slug": "uramakis-variados-premium"
+    },
+    {
+      "name": "Carpaccios Variados",
+      "slug": "carpaccios-variados"
+    },
+    {
+      "name": "Harumakis e Gyozas",
+      "slug": "harumakis-e-gyozas"
+    },
+    {
+      "name": "Teppans Variados Poços",
+      "slug": "teppans-variados-pocos"
+    },
+    {
+      "name": "Bebidas",
+      "slug": "bebidas"
+    },
+    {
+      "name": "Saladas Veganas e Vegetarianas",
+      "slug": "saladas-veganas-e-vegetarianas"
+    },
+    {
+      "name": "Shimeji Box",
+      "slug": "shimeji-box"
+    }
+  ],
+  "products": [
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Rodízio japonês em casa 64 peças",
+      "price": "129.99",
+      "description": "2 harumaki de queijo, 2 harumaki de chocolate, 2 guiosa de carne bovina, 2 camarão empanado, 2 lula, 5 hot rool Filadélfia, 5 hot rool mineiro com couve frita, 4 hot rool de banana chocolate de avelã, 1 mini porção de shimeji, 1 mini porção de teppan, 1 salada de sonomono oriental japonesa, 1 carpaccio de salmão ao molho ponzu 5 fatias Combinado de sushi completo, 10sashimis de salmão fresco, 2 uramaki de salmão grelhado com Doritos, 2 uramaki de salmão Filadélfia com couve, 2 uramaki Filadélfia, 2 uramaki de c",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/9c9d7bd1-3e36-4fe6-9254-4d536ef0723d.jpg"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Rodízio trufado gourmet 62 peças",
+      "price": "189.99",
+      "description": "carpaccio de salmao com ovas, tataki , 1 sonomono, 2 guiosas suinas, 4 camarões, 2 harumakis de queijo, 2 harumakis de legumes, 2 harumakis de doce de leite, 10 hot variado, 5 fatias de salmao e 5 fatias de polv, 5 sashimi de salmao ao azeite trufado com ovas black e flor de sal , 2 uramakis de salmao filadelfia especial , 2 uramakis de salmao grelhado especiais, 4 uramakis de camarão especiais, 2 hossomakis de salmao, 2 hossomakis de camarao, 2 joy de ovas, 2 joy de camarão, 2 niguiris de salmao, 2 niguiris polvo",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/faa2de05-33c5-46b8-b489-60ca712dd1b6.jpg"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combo família premium 75 peças",
+      "price": "169.90",
+      "description": "10 sashimis de salmão, 10 sashimis de salmão trufado com flor de sal, 5 sashimi de salmao maçaricado, 8 uramaki de salmão Filadélfia, 8 hossomaki de salmão, 8 Joe variados de salmão, 8 niguiri de salmão, 8 camarão empanado, 10 hot roll variados, Todos nossos sushi são com os toques do chefe, vc vai se surpreender",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/8b770b81-4734-49b3-871f-3f31854719df.jpg"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combinado top 2 42 peças",
+      "price": "89.99",
+      "description": "10 sashimis de salmão, 4 uramakis de salmão Filadélfia, 4 hossomakis de salmão grelhado, 4 uramakis de salmão grelhado, 4 hossomakis de salmão, 4 hossomakis de salmão, 4 Joy de salmão, 4 niguiris de salmão, 10 hot rolls variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/21eb641d-2a3a-4cc9-8839-7b410d9f3245.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combo sushis tradicionais 38 peças",
+      "price": "84.99",
+      "description": "4 sashimis de salmão, 8 uramaki de salmão, 8 hossomaki de salmão, 4 Joy de salmão, 4 niguiri de salmão, 10 hot roll variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/7203112a-569c-4e8b-9f39-6bea14315350.jpg"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combinado casal feliz 42 temakis",
+      "price": "99.99",
+      "description": "10 sashimis de salmão, 4 uramakis especiais de salmão, 8 hossomakis de salmao, 4 niguiris de salmão, 6 joy de salmão , 10 hot rolls, 2 temakis Filadélfia",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/5856c5ba-8d43-42a2-8d2f-8901c52f6124.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combinado especial salmão 25 peças",
+      "price": "84.99",
+      "description": "5 sashimis de salmão , 4 uramakis especiais, 4 uramakis de salmão , 4 niguiris salmão , 4 Joy de salmão , 4 hot rolls",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/9bea94f0-3f1b-48e1-8cc2-9d39f993ddb2.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combinado só sushi 20 peças",
+      "price": "49.90",
+      "description": "4 uramakis salmão , 4 uramakis salmão grelhado , 4 hossomakis grelhado , 4 hossomakis salmão , 4 hot rolls variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/43779908-bdb8-406d-93e4-a33518145b5f.jpg"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combinado salmão tradicional 40 peça",
+      "price": "94.99",
+      "description": "8 sashimis de salmão , 8 hossomakis salmão , 8 uramakis salmão , 4 Joy , 4 niguiris de salmão , 10 hot rolls",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/a995c059-0cdd-4f0e-8de9-e9ba8580a254.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combo hot roll 24peças",
+      "price": "49.99",
+      "description": "24 hot rolls variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/ce321928-89b9-4873-81c8-6f15933dedde.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combo mais temaki 12 peças",
+      "price": "49.90",
+      "description": "10 hot variados , 1 temaki Filadélfia salmão , 1 temaki salmão grelhado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/641188c8-3dbf-41b7-a644-4ac0685200f1.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combo tradicional 24 peças",
+      "price": "74.90",
+      "description": "4 sashimis de salmão , 8 uramakis , 6 niguiris salmão , 6 Joy salmão",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/d40323a2-9118-4284-af1b-a95965ca51b5.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combinado família feliz 56 peças",
+      "price": "98.90",
+      "description": "10 sashimis de salmão , 8 uramakis de salmão , 8 uramakis de salmão grelhado , 8 hossomakis de salmão , 4 hossomakis grelhados , 4 Joy salmão , 4 niguiris de salmão , 10 hot rolls variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/47c1d5fe-299d-40b7-a2ee-3a7fdbe0829c.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combinado 27 peças mais temaki",
+      "price": "74.90",
+      "description": "4 sashimis de salmão , 4 niguiris de salmão , 4 Joy salmão , 4 uramakis de salmão , 10 hot rolls variados , 1 temaki Filadélfia",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/7ab16f5c-556c-4a7f-9b03-525d1a8ddd52.jpg"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combo salmão azeite trufado 24 peças",
+      "price": "79.90",
+      "description": "8 sashimis de salmão com azeite trufado , 6 hossomakis de salmão , 2 niguiris de salmão trufado , 2 niguiris salmão , 4 Joy salmão trufado , 4 uramakis salmão , 4 hot rolls",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/2c931a3e-0124-4049-a440-349d885f6841.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Combo Sushi poços especial 68 peças",
+      "price": "149.90",
+      "description": "8 uramakis de salmão , 8 uramakis de salmão grelhado , 8 hossomakis de salmão , 8 hossomaki grelhado , 8 Joy salmão , 8 niguiri salmão , 20 hot roll variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/9f62cf4e-4d51-4fc2-b095-8a75cfd8c5e0.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "Sushi maçaricado 20 peças",
+      "price": "64.99",
+      "description": "4 sashimis de salmão , 2 niguiris salmão , 2 niguiris salmão maçaricados , 4 batera salmão , 8 hot rolls variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/7ad1a303-414c-4188-a8b7-93ea883d9f78.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "combo hot rool com temaki",
+      "price": "49.99",
+      "description": "1 TEMAKI HOT ROOL , 10 hot variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/a6a8dd8a-7122-4cff-b39f-23d7d5e7e666.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "combo hot roll família 5 pessoa",
+      "price": "149.99",
+      "description": "5 temakis hot rool , 50 hot variados",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/909655a9-d4ca-46d2-ade0-a40f1e609ec1.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "sushi burguer o bravo",
+      "price": "49.99",
+      "description": "salmão cream cheese Cebolinha e arroz empanado alface",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/59809042-3ba8-485f-be6a-6e684e159389.jpg"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "como queridinho 20 peças",
+      "price": "39.99",
+      "description": "10 uramax salmão , 10 hot roll variado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/0dd96560-cfea-4c3b-a9f2-2b9de4e817f6.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "combo 2 temakis hot de 20 hot",
+      "price": "59.99",
+      "description": "dois temax hot , 20 hot roll variado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/f3944ec3-708b-45a6-8b4f-ccf42bc8bd3e.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "dog rool fila salmão cru",
+      "price": "29.99",
+      "description": "salmão cream cheese Cebolinha com hot aberto ao meio",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/57901393-bd42-4d49-9139-4fefc812f5b0.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "dog salmão grelhado",
+      "price": "29.99",
+      "description": "salmão grelhado o cream cheese Cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/172d7919-b074-4234-b50e-ef12f3975fbe.png"
+    },
+    {
+      "category_slug": "sushis-tradicionais",
+      "name": "combo família festival em casa 200 p",
+      "price": "249.99",
+      "description": "200 peças de sushi esvariado , agora você pode fazer o evento na sua casa , 20 sashimi de salmão, 20 uramakix variado , 20 hossomaki variado , 20 Joy variado , 20 nigiri variado sushi , 100 hot Rolls variado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/0bcb56c7-c37b-4d69-ab43-0ae79141629c.png"
+    },
+    {
+      "category_slug": "sushis-variados-gourmet",
+      "name": "Baterá de salmão Filadélfia (8 un)",
+      "price": "27.90",
+      "description": "8 baterá Filadélfia com creamcheese, salmão prensado e cebolinha ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/48c2cb01-f218-4a6d-a97b-ebdfd7e17e43.jpg"
+    },
+    {
+      "category_slug": "sushis-variados-gourmet",
+      "name": "Sushi especial criação chefe (6 un)",
+      "price": "35.90",
+      "description": "6 sushis especiais sem arroz, salmão, camarão, cream cheese, cebolinha e couve frita ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/9f5480e5-b45c-4f44-af2c-b1870dbdaf1e.jpg"
+    },
+    {
+      "category_slug": "sushis-variados-gourmet",
+      "name": "Sushi de camarão com salmão (6 un)",
+      "price": "35.90",
+      "description": "6 sushis de camarão empanado com toques do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/58db7054-8ba5-4a8e-8832-5dfecfb35fdd.jpg"
+    },
+    {
+      "category_slug": "sushis-variados-gourmet",
+      "name": "Niguiri de camarão eby (4 un)",
+      "price": "35.90",
+      "description": "4 sushis selecionados de camarão fresquinho",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/3a1004fd-510e-4f7a-83c6-cf6d67343790.jpg"
+    },
+    {
+      "category_slug": "sushis-variados-gourmet",
+      "name": "Joy de ovos de codorna Premium 6 un",
+      "price": "35.90",
+      "description": "6 Joy de ovos de codorna com azeite trufado e raspa de limão siciliano, flor de sal ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/45ff97b6-048f-47da-a6e2-860248d3ec1d.jpg"
+    },
+    {
+      "category_slug": "yakisoba",
+      "name": "Yakisoba frango",
+      "price": "49.99",
+      "description": "Legumes , Macarrão , Frango",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/3bc4ab45-d924-480e-8ee4-77dafb1d2f40.jpg"
+    },
+    {
+      "category_slug": "yakisoba",
+      "name": "Yakisoba carne",
+      "price": "57.99",
+      "description": "Legumes , Carne, Macarrão",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/008f0a0a-24c9-4aa2-9039-ef32de338b36.jpg"
+    },
+    {
+      "category_slug": "yakisoba",
+      "name": "yakissoba camarao",
+      "price": "64.99",
+      "description": "legumes camarao molho",
+      "image_url": null
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot Roll especial sem arroz",
+      "price": "35.90",
+      "description": "Hot Roll de salmão com cream cheese e cebolinha com toque do chef sem arroz",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/f3df4e0c-617c-4b98-a96a-085817b25489.jpg"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot Roll mineiro poços de Caldas",
+      "price": "27.00",
+      "description": "Hot roll mineiro com couve e cream cheese, salmão ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/c8396cbf-9748-489f-9919-42b022f50d6e.jpg"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot Roll Filadélfia",
+      "price": "27.00",
+      "description": "Hot roll Filadélfia, salmão cream cheese e Cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/edbdc412-a9ac-4a0b-92d2-7e7db4d8d980.jpg"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot Roll Doritos",
+      "price": "29.90",
+      "description": "Hot roll de salmão com cream cheese e Doritos ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/c8fc47b3-cbc7-459c-87d6-4947e786a6d1.jpg"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot Roll especial de camarão sem arr",
+      "price": "34.90",
+      "description": "Hot roll especial de camarão sem arroz, Hot roll de salmão com camarão empanado, cream cheese, cebolinha ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/c5dbca16-5ee5-4a40-93b9-fa11c42bcd41.jpg"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot dog roll lançamento",
+      "price": "27.90",
+      "description": "Dog rool e um hot rool aberto todo recheado com salmão, cream cheese e cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/60146954-763d-4a59-9e2d-ab6f17dcc341.jpg"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot dog roll de salmão com camarão",
+      "price": "29.90",
+      "description": "Salmão, camarão, cream cheese e Cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/a01fb286-57c2-4c41-b905-7cb66d41bdc5.jpg"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot Roll shimeji",
+      "price": "24.90",
+      "description": "Creme de inhame",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/466380db-adc6-46f6-aea7-c9b68728c234.png"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Hot roll c/ geleia de pimenta",
+      "price": "24.90",
+      "description": "Arroz, shimeji, geleia de pimenta e creme de inhame",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/f62dcad5-8428-47ff-92fa-ff437449b835.png"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Rot roll c/ shitake couve frita",
+      "price": "29.90",
+      "description": "arroz shitake, couve e creme de inhame",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/f956dd3e-e139-414b-a457-5e4a7b78d609.png"
+    },
+    {
+      "category_slug": "hot-rolls-variados-premium",
+      "name": "Banana e chocolate de avelã",
+      "price": "24.90",
+      "description": "Hot roll de banana com chocolate de avelã e amendoas",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/d1dedb4d-c329-43fa-ae1b-bbd81475e285.png"
+    },
+    {
+      "category_slug": "niguiris-variados",
+      "name": "Niguiri de salmão tradicional (6 un)",
+      "price": "24.90",
+      "description": "6 niguiris de salmão tradicional ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/29eb236c-6285-4c53-9dfa-ff2fda963c42.jpg"
+    },
+    {
+      "category_slug": "niguiris-variados",
+      "name": "Niguiri salmão trufado Premium 6 un",
+      "price": "27.90",
+      "description": "6 niguiri de salmão com azeite de trufa e flor de sal e limão siciliano",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/65549ddb-7084-4207-8f4e-c1d6050a71c4.jpg"
+    },
+    {
+      "category_slug": "niguiris-variados",
+      "name": "Niguiri de salmão skin Premium",
+      "price": "19.90",
+      "description": "6 niguiri de pele de salmão ao toque só chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/fd79d593-c0b2-43b9-a1d3-096acdbab136.jpg"
+    },
+    {
+      "category_slug": "niguiris-variados",
+      "name": "Niguri de salmão maçaricado",
+      "price": "19.90",
+      "description": "6 niguiri de salmão maçaricado com molho tare e gergelim ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/63f020dd-c682-41e8-a928-1aaf8b2d5a15.jpg"
+    },
+    {
+      "category_slug": "niguiris-variados",
+      "name": "Niguri de polvo 6 unidades",
+      "price": "39.90",
+      "description": "Niguri de polvo fresquinho com bastante proteína",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/2b4cf475-369c-4ba4-aff8-b334dea349f0.png"
+    },
+    {
+      "category_slug": "joys-variados-premium",
+      "name": "Joy Chico Cesar Premium",
+      "price": "19.00",
+      "description": "6 Joy variados de salmão com cream cheese, maçaricados com couve frita ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/3ee967dc-160f-47ee-ba8d-838ead3848eb.jpg"
+    },
+    {
+      "category_slug": "joys-variados-premium",
+      "name": "Joy de salmão Filadélfia",
+      "price": "19.90",
+      "description": "6 Joy de salmão com cream cheese e Cebolinha ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/6c13536e-2cde-4859-a022-b7f6cbfb1766.jpg"
+    },
+    {
+      "category_slug": "joys-variados-premium",
+      "name": "Joy de salmão com Doritos Premium",
+      "price": "22.90",
+      "description": "6 Joy de salmão com cream cheese, Cebolinha, Doritos ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/53aa455e-7342-4ba5-b958-5270115ceb60.jpg"
+    },
+    {
+      "category_slug": "joys-variados-premium",
+      "name": "Joy de salmão especial c/ alho poró",
+      "price": "22.90",
+      "description": "6 Joy de salmão com cream cheese, alho poró crocante ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/b18df2cc-6de1-420f-a534-c9641d5090b5.jpg"
+    },
+    {
+      "category_slug": "joys-variados-premium",
+      "name": "Joy de salmão com geleia de morango",
+      "price": "22.90",
+      "description": "6 Joy de salmão com cream cheese geleia de morango ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/ef990242-c2e2-4e37-af48-672a94a833ab.jpg"
+    },
+    {
+      "category_slug": "joys-variados-premium",
+      "name": "Joy de camarão empanado especial",
+      "price": "24.90",
+      "description": "6 Joy de camarão empanado com cream cheese e cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/e7d8d189-c020-463f-8d03-7666dacb511a.jpg"
+    },
+    {
+      "category_slug": "joys-variados-premium",
+      "name": "Joy de Nutella 6 unidades",
+      "price": "24.90",
+      "description": "Joy de salmão maçaricado com cream cheese, E Nutella e amendoa",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/6669fdbd-ce3e-464d-ac04-add84ab42d3d.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki Filadélfia Premium",
+      "price": "26.90",
+      "description": "Temaki Filadélfia: salmão, cream cheese e Cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/99f108ad-7ac7-4a50-b21e-1f943c103b6d.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki de camarão empanado",
+      "price": "29.99",
+      "description": "Temaki de camarão empanado Filadélfia, Temaki de camarão empanado cream cheese e Cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/6f283f15-c80d-4070-8c9e-4d581f42216e.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki de skin Filadélfia Premium",
+      "price": "15.90",
+      "description": "Temaki de skin pele de salmão crocante cream cheese e Cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/91773ce3-7cac-4fc0-b3a4-374d1d148cc6.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki salmão Doritos Premium",
+      "price": "27.90",
+      "description": "Temaki de salmão cream cheese Doritos e Cebolinha ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/d1890c09-d578-4d5a-98a3-f19ab88278ed.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki especial de salmão do chef",
+      "price": "37.90",
+      "description": "Temaki especial de salmão do chef sem arroz, Temaki de salmão com cream cheese, Cebolinha, camarão empanado ao toque do chefe sem arroz",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/94d2c240-b7fd-4962-b1b0-417927274d14.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki de salmão grelhado",
+      "price": "24.90",
+      "description": "Temaki de salmão grelhado Filadélfia Premium, Temaki de salmão grelhado com cream cheese Cebolinha ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/ee54edf2-2dd7-4619-a8cb-d45e4d98acaf.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki hot roll empanado Premium",
+      "price": "24.90",
+      "description": "Temaki de salmão com cream cheese e Cebolinha. empanado ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/e21fe84d-d2ee-4b52-92fe-d27e05809948.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki salmão spacy Filadélfia",
+      "price": "25.90",
+      "description": "Temaki de salmão com cream cheese, cebolinha, pimenta coreana e raspa de limão siciliano",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/36e2f69c-e0b2-4e34-8898-5614db602d27.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki de salmão",
+      "price": "22.90",
+      "description": "Arroz, alga, salmão fresco",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/5df5e198-2843-4e09-a9df-b8bbf4cce87e.jpg"
+    },
+    {
+      "category_slug": "temakis-variados-premium",
+      "name": "Temaki de camarão grelhado",
+      "price": "28.90",
+      "description": "Temaki de camarão grelhado no azeite, , Arroz, Camarão grelhado no azeite, Cream cheese, Cebolinha alga",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/71dc6c23-927c-4617-bc2a-d165b3c81e4b.jpg"
+    },
+    {
+      "category_slug": "pokes-variados-premium",
+      "name": "Poke de salmão",
+      "price": "55.90",
+      "description": "Poke de salmão, pode escolher os acompanhamentos e molhos",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/004b4039-1deb-4f02-b855-eb0b47b02394.jpg"
+    },
+    {
+      "category_slug": "pokes-variados-premium",
+      "name": "Poke de camarão premium",
+      "price": "62.90",
+      "description": "Poke de camarão com salmão (pode escolher seu acompanhamento e molho)",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/59ac2bd1-2ffd-4fe6-9458-5a5e1758ddcc.jpg"
+    },
+    {
+      "category_slug": "pokes-variados-premium",
+      "name": "Poke de frutos do mar",
+      "price": "84.90",
+      "description": "Poker de frutos do mar, polvo, salmão e lula, pode escolher seu acompanhamento e molho",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/da48a500-f2f4-492c-9241-3c881bea1457.jpg"
+    },
+    {
+      "category_slug": "sashimis-de-salmao-pocos",
+      "name": "Sashimi de salmão com azeite",
+      "price": "24.90",
+      "description": "Sashimi de salmão com azeite trufado , São 5 sashimis de salmão trufado com flor de sal e limão siciliano ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/f8e6969b-d834-4fa6-8556-ecb6826c9799.jpg"
+    },
+    {
+      "category_slug": "sashimis-de-salmao-pocos",
+      "name": "Sashimi de salmão 6 unidades",
+      "price": "19.90",
+      "description": "São 6 sashimis de salmão fresquinho",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/b7ea26a0-e6f7-4452-82cc-fc2f567980e3.jpg"
+    },
+    {
+      "category_slug": "sashimis-de-salmao-pocos",
+      "name": "Sashimi de salmão maçaricado 6 un",
+      "price": "19.90",
+      "description": "6 sashimi de salmão maçaricado com molho tarê e gergelim",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/bd30bc2d-7603-482b-823e-c968f5322691.jpg"
+    },
+    {
+      "category_slug": "sashimis-de-salmao-pocos",
+      "name": "Sashimi de polvo",
+      "price": "27.90",
+      "description": "6 fatias de polvo",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/b43db1bb-c7b6-4e98-8eeb-3a5f71ead80b.jpg"
+    },
+    {
+      "category_slug": "sashimis-de-salmao-pocos",
+      "name": "10 sashimi de salmão",
+      "price": "29.90",
+      "description": "10 sashimis de salmão fresco Premium A escolha do cliente Com azeite trufado ou maçaricado com molho tare",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/79d8a5db-821a-4c46-8ae4-62d452aaaab4.jpg"
+    },
+    {
+      "category_slug": "uramakis-variados-premium",
+      "name": "Uramaki salmão Filadélfia",
+      "price": "19.90",
+      "description": "Uramaki de salmão grelhado com cheese, cebolinha ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/24f3439a-13b8-4a75-b9e2-d9f70dc6d957.jpg"
+    },
+    {
+      "category_slug": "uramakis-variados-premium",
+      "name": "Uramaki nachos Filadélfia",
+      "price": "23.90",
+      "description": "Uramaki de salmão grelhado com cream cheese e Doritos",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/95904ce7-500d-4b2e-8ca5-ef84be967b44.jpg"
+    },
+    {
+      "category_slug": "uramakis-variados-premium",
+      "name": "Uramaki de skin Filadélfia",
+      "price": "15.90",
+      "description": "Uramaki de skin Filadélfia com pele de salmão crocante ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/f65c5302-e96e-45da-a765-8a6a95e28299.jpg"
+    },
+    {
+      "category_slug": "uramakis-variados-premium",
+      "name": "Uramaki Califórnia",
+      "price": "17.90",
+      "description": "Uramaki Califórnia, manga, pepino e Kani ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/9af65c82-4832-4862-98c3-e83fa9af1702.jpg"
+    },
+    {
+      "category_slug": "uramakis-variados-premium",
+      "name": "Especial camarão empanado do chef",
+      "price": "29.90",
+      "description": "Uramaki de camarão empanado com cream cheese, cebolinha e uma fita de salmão por cima com o toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/0c3aede5-8702-4eca-9e1a-a0c3d4268b9f.jpg"
+    },
+    {
+      "category_slug": "uramakis-variados-premium",
+      "name": "Uramaki de salmão grelhado",
+      "price": "17.00",
+      "description": "Uramaki de salmão grelhado com cream cheese, cebolinha ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/0fabbe89-e385-47b2-bbd9-404a630e38e3.jpg"
+    },
+    {
+      "category_slug": "uramakis-variados-premium",
+      "name": "Hossomaki de salmão premium 8 un",
+      "price": "16.90",
+      "description": "Hossomaki de salmão com arroz japonês tradicional",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/53304f24-4ca7-464d-b288-c10a9f49be62.jpg"
+    },
+    {
+      "category_slug": "uramakis-variados-premium",
+      "name": "Hossomaki de kani",
+      "price": "14.90",
+      "description": "Alga marinha,, Arroz,, Kani artificial de caranguejo",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/e396601f-6151-445c-a7c9-3c2ef1d470cc.jpg"
+    },
+    {
+      "category_slug": "carpaccios-variados",
+      "name": "Carpaccio de salmão ao molho ponzu",
+      "price": "24.90",
+      "description": "8 fatias finas de salmão com molho ponzu japonês ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/e7e2343b-c1d6-45c9-9edd-d4980eee930a.jpg"
+    },
+    {
+      "category_slug": "carpaccios-variados",
+      "name": "Carpaccio de salmão trufado Premium",
+      "price": "29.90",
+      "description": "8 fatias finas de salmão com azeite trufado com flor de limão siciliano ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/ba700bb8-53ec-4a0e-8565-559499954a6f.jpg"
+    },
+    {
+      "category_slug": "carpaccios-variados",
+      "name": "Carpaccio de salmão ao molho pesto",
+      "price": "39.90",
+      "description": "8 fatias finas de salmão com molho a base de ervas verdes cítrico ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/c4245126-7ff1-4f69-8105-41013ff64411.jpg"
+    },
+    {
+      "category_slug": "carpaccios-variados",
+      "name": "Carpaccio de salmão maçaricado",
+      "price": "24.90",
+      "description": "Carpaccio de salmão maçaricado Premium",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/1592a174-d4de-497f-9c78-bdebd4d11d94.jpg"
+    },
+    {
+      "category_slug": "carpaccios-variados",
+      "name": "Tartaki de salmão maçaricado",
+      "price": "24.00",
+      "description": "Tartaki de salmão maçaricado Premium, 8 fatias de salmão macaricado com molho do chefe",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/16ca2d0c-e81c-4739-be9b-342347e6f456.jpg"
+    },
+    {
+      "category_slug": "carpaccios-variados",
+      "name": "Carpaccio de polvo 8 fatias",
+      "price": "32.90",
+      "description": "Escolha seu molho temos 3 opções ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/8da3e74a-45e1-4d92-94f2-28894ab3f485.png"
+    },
+    {
+      "category_slug": "carpaccios-variados",
+      "name": "Ceviche de salmão Premium",
+      "price": "39.90",
+      "description": "Salmão,, Cebola roxa,, Tomate cereja,, Limão,, Laranja,, Shoyu,, Tempero do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/a2736753-15dc-44bb-aef9-3498818f472b.png"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Harumaki de queijo (6 uni)",
+      "price": "29.90",
+      "description": "Harumaki crocante de queijo",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/bf6895c9-7472-4d6f-942e-aaff39ded0aa.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Harumaki de legumes (6 unidades)",
+      "price": "24.90",
+      "description": "Harumaki de legumes crocante",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/1137d843-9884-4d94-96e7-ffba4a6e06d3.png"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Harumaki de chocolate (6 unidades)",
+      "price": "24.00",
+      "description": "6 harumaki de chocolate",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/2af6f30e-1d1d-4017-9903-aabf7b4a7e02.png"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Harumaki de doce de leite (6 un)",
+      "price": "19.99",
+      "description": "Harumaki de Doce de Leite",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/abc92590-4aea-42a7-9570-373fac202d0d.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Anel de lula empanado Premium",
+      "price": "32.90",
+      "description": "8 unidades de lula empanada e tempreada ao toque do chef com molho de geleia de pimenta",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/7661ba0a-3318-4a1d-87fa-7415c272a60c.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Bolinho de salmão empanado Premium",
+      "price": "34.90",
+      "description": "6 bolinhos de salmão empanados e crocante com molho do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/98d449f6-25bd-465f-a098-88704de26639.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Sushi burguer de salmão grelhado",
+      "price": "29.90",
+      "description": "Sushi burguer de salmao grelhado ao toque do chef cream-cheese e cebolinha",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/99d9e324-7dc5-4d17-83ac-4485fcc552e8.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Sushi burguer de camarão empanado",
+      "price": "44.90",
+      "description": "Sushi burguer camarão cream cheese cebolinha e toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/a65975b0-57a8-4d94-abad-1e5c7d2cff7d.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Guiosa de carne bovina Premium 6 un",
+      "price": "24.90",
+      "description": "Guiosa de carne bovina ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/2530b3ec-7439-4485-8335-0ba72888a93f.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Sushi burguer de salmão Filadélfia",
+      "price": "29.00",
+      "description": "Salmão cru com arroz japonês cream cheese",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/d0780e01-ba21-4b1a-adf3-43d8c80a8d5b.png"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Camarão empanado do chefe 12 unidad",
+      "price": "34.90",
+      "description": "12 unidades de camarão empanado com molho tunkatsu do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/6e930ed1-88ff-438a-b6f6-fd2372641684.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Guiosa de Legumes",
+      "price": "12.90",
+      "description": "4 unidades",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/4bc9ee29-4b54-4aff-b898-49d01af79819.jpg"
+    },
+    {
+      "category_slug": "harumakis-e-gyozas",
+      "name": "Guiosa Suína",
+      "price": "12.90",
+      "description": "4 unidades",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/4d778f41-caf7-4fd0-8f7f-dace4c9fc435.jpeg"
+    },
+    {
+      "category_slug": "teppans-variados-pocos",
+      "name": "Teppan de camarão Premium",
+      "price": "79.90",
+      "description": "Teppan de camarão e legumes, salteado no azeite de oliva com arroz japonês temperado ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/ecc14b70-a05c-4c14-bfb8-87a4546a2a32.jpg"
+    },
+    {
+      "category_slug": "teppans-variados-pocos",
+      "name": "Teppan de frutos do mar",
+      "price": "89.90",
+      "description": "Camarão,, Lula,, Polvo, Kani artificial de caranguejo,, Legumes puxado no azeite,, Arroz japonês temperado ao toque do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/5be9de27-628b-4869-9dfe-40e3a1d461ff.png"
+    },
+    {
+      "category_slug": "teppans-variados-pocos",
+      "name": "Teppan de Salmão",
+      "price": "69.90",
+      "description": "Legumes, arroz e salada salteada acompanhada de salmão grelhado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/135ffb30-41b5-41b1-94ef-f457d4f3d611.png"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Água com gás São Lourenço 300ml",
+      "price": "5.99",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/db679c1f-dd9d-4119-b45f-3cc76ad920bb.png"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "H2o limoneto gelado 500ml",
+      "price": "8.90",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/8638d269-8df3-4a1c-8687-5655558f385d.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Schweppes",
+      "price": "7.90",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/b311ea68-b795-4f12-a159-d548cac44881.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Guaraná zero 350 ml",
+      "price": "7.90",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/02b21a6f-9508-4c0d-9a6e-f94cd5c18d62.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Guaraná 350 ml",
+      "price": "7.99",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/fe224d97-317c-4bf4-8b6f-48863394cd92.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Fanta laranja 350 ml",
+      "price": "7.99",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/bd0837b9-102e-47fa-ad1c-8d82a9ff06e2.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Fanta uva 350 ml",
+      "price": "7.99",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/11736fab-9ae2-4865-9f1b-f28d1e48aa8f.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Coca cola zero 350 ml",
+      "price": "7.90",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/5bc785f6-dce9-49f5-b781-a2c0b089032b.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Coca cola 350ml",
+      "price": "7.99",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/2d2f8bff-63aa-42d3-aca0-64d223074cf1.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Ice tea de limão",
+      "price": "7.90",
+      "description": "chá gelado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/5b184cfa-a113-451a-bfdc-b2b30502fe68.png"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Ice tea pêssego",
+      "price": "7.90",
+      "description": "Chá gelado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/d11d3209-81f6-41c0-9819-8e172aebae8b.png"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Bombom sonho de valsa",
+      "price": "1.99",
+      "description": "",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/7e48e795-e439-42d4-86cd-cbfeb5a263ea.jpg"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Suco dell vale 290 ml sabor manga",
+      "price": "7.99",
+      "description": "Suco em lata gelado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/7444b421-ae61-4d52-b575-eb9d222ca7f8.jfif"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Suco del Valle de maracujá 290 ml",
+      "price": "7.90",
+      "description": "Gelado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/5beed704-ec35-4b1d-abe2-c3f53723ab97.jfif"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "Suco del Valle de uva 290 ml",
+      "price": "7.90",
+      "description": "Gelado",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/7b17e873-1b15-4448-a05b-e47331906af7.jfif"
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "COCA 2 LITROS",
+      "price": "17.99",
+      "description": "",
+      "image_url": null
+    },
+    {
+      "category_slug": "bebidas",
+      "name": "GUARANA 2 LITROS",
+      "price": "12.99",
+      "description": "",
+      "image_url": null
+    },
+    {
+      "category_slug": "saladas-veganas-e-vegetarianas",
+      "name": "Sunomono",
+      "price": "9.90",
+      "description": "Sunomono: uma saladinha de pepino com molho japonês e gergelim moido, 200 gramas",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/89c8dc03-2c78-4954-a123-2e3b1318433c.png"
+    },
+    {
+      "category_slug": "shimeji-box",
+      "name": "Shimeji box",
+      "price": "24.90",
+      "description": "Shimeji puxado no azeite, c/tempero do chef",
+      "image_url": "https://assets.olaclick.app/companies/products/images/800/4242ad3f-1ecb-42f7-a1e2-72cc18b74f0c.png"
+    }
+  ]
+}

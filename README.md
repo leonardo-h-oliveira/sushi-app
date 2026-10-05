@@ -94,8 +94,8 @@ Populate the local database with the initial restaurant menu:
 python backend/seed.py
 ```
 
-The seeder is idempotent: running it again updates the 17 categories and 10
-products instead of creating duplicates.
+The seeder is idempotent: running it again updates the 16 categories and 124
+products imported from the public Sushi Poços menu instead of creating duplicates.
 
 ### Product options
 

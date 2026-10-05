@@ -18,23 +18,22 @@ def test_seed_populates_the_complete_menu_without_duplicates() -> None:
 
     assert first_result == second_result == (len(CATEGORIES), len(PRODUCTS))
     with Session(engine) as session:
-        assert session.scalar(select(func.count()).select_from(Category)) == 17
-        assert session.scalar(select(func.count()).select_from(Product)) == 10
+        assert session.scalar(select(func.count()).select_from(Category)) == 16
+        assert session.scalar(select(func.count()).select_from(Product)) == 124
         categories = list(session.scalars(select(Category).order_by(Category.sort_order)))
         assert [category.slug for category in categories] == [item["slug"] for item in CATEGORIES]
-        promotion = session.scalar(
-            select(Product).where(Product.name == "Temaki Hot Roll Empanado Premium")
+        product = session.scalar(
+            select(Product).where(Product.name == "Rodízio japonês em casa 64 peças")
         )
-        assert promotion is not None
-        assert promotion.price.as_tuple() == Decimal("24.90").as_tuple()
-        assert promotion.original_price == Decimal("29.90")
-        assert promotion.discount_percent == 17
+        assert product is not None
+        assert product.price.as_tuple() == Decimal("129.99").as_tuple()
+        assert product.image_url is not None
 
 
 def test_seed_uses_normalized_menu_names_and_decimal_prices() -> None:
     names = {item["name"] for item in PRODUCTS}
 
-    assert "Temaki Hot Roll Empanado Premium" in names
-    assert "Rodízio Trufado Gourmet (62 peças)" in names
-    assert all("Rool" not in name for name in names)
+    assert "Rodízio japonês em casa 64 peças" in names
+    assert "Teppan de Salmão" in names
+    assert "Coca cola 350ml" in names
     assert all(item["price"].count(".") == 1 for item in PRODUCTS)

@@ -97,7 +97,7 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
     <main>
       <header className="site-header">
         <a className="brand" href="#menu" aria-label="Sushi Poços, início">
-          <span className="brand-mark" aria-hidden="true">SP</span>
+          <span className="brand-logo" aria-hidden="true" />
           <span><strong>Sushi Poços</strong><small>cozinha japonesa</small></span>
         </a>
         <nav aria-label="Navegação principal">

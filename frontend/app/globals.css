@@ -21,6 +21,7 @@ button { font: inherit; }
 }
 .brand { align-items: center; display: flex; gap: 12px; }
 .brand-mark { align-items: center; background: var(--red); border-radius: 50%; color: white; display: flex; font-family: Georgia, serif; height: 42px; justify-content: center; width: 42px; }
+.brand-logo { background: url("/sushi-icon.jpg") center/cover no-repeat; border-radius: 50%; display: block; flex: 0 0 48px; height: 48px; width: 48px; }
 .brand strong, .brand small { display: block; }
 .brand strong { font-family: Georgia, serif; font-size: 18px; }
 .brand small { color: var(--ink-soft); font-size: 9px; letter-spacing: .17em; text-transform: uppercase; }

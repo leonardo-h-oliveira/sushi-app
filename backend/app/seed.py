@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.database import SessionLocal
 from app.models import Category, Product
+from app.menu_catalog import CATEGORIES as IMPORTED_CATEGORIES
+from app.menu_catalog import PRODUCTS as IMPORTED_PRODUCTS
 
 STORE = {
     "name": "Sushi Poços",
@@ -120,6 +122,11 @@ PRODUCTS = [
     ),
 ]
 
+# Keep the catalog in JSON so it can be refreshed mechanically from the public
+# storefront without turning this module into a multi-thousand-line data file.
+CATEGORIES = IMPORTED_CATEGORIES
+PRODUCTS = IMPORTED_PRODUCTS
+
 
 def seed_categories(session: Session) -> dict[str, Category]:
     """Create or update categories without duplicating them."""
@@ -161,8 +168,11 @@ def seed_products(session: Session, categories: dict[str, Category]) -> list[Pro
         product.price = Decimal(str(data["price"]))
         product.original_price = (
             Decimal(str(data["original_price"]))
-            if data["original_price"] is not None
+            if data.get("original_price") is not None
             else None
+        )
+        product.image_url = (
+            str(data["image_url"]) if data.get("image_url") is not None else None
         )
         product.sort_order = positions[category_slug]
         product.active = True

@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   title: "Sushi Poços | Cardápio",
   description: "Sushi fresco, combinações autorais e pedidos sem complicação.",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/sushi-icon.jpg",
+    apple: "/sushi-icon.jpg",
+  },
 };
 
 export const viewport: Viewport = { themeColor: "#0f172a" };

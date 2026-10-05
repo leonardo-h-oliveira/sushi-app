@@ -79,7 +79,7 @@ export default function CheckoutPage() {
 
   return (
     <main className="checkout-page">
-      <header className="site-header"><Link className="brand" href="/" aria-label="Sushi Poços, início"><span className="brand-mark" aria-hidden="true">SP</span><span><strong>Sushi Poços</strong><small>cozinha japonesa</small></span></Link><Link className="back-link" href="/cart">← Voltar à sacola</Link></header>
+      <header className="site-header"><Link className="brand" href="/" aria-label="Sushi Poços, início"><span className="brand-logo" aria-hidden="true" /><span><strong>Sushi Poços</strong><small>cozinha japonesa</small></span></Link><Link className="back-link" href="/cart">← Voltar à sacola</Link></header>
       <section className="checkout-content" aria-labelledby="checkout-title">
         <p className="eyebrow">Último passo</p><h1 id="checkout-title">Como vamos entregar?</h1>
         <form className="checkout-layout" onSubmit={submit} noValidate>

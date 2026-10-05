@@ -45,7 +45,7 @@ export default function CartPage() {
     <main className="cart-page">
       <header className="site-header">
         <Link className="brand" href="/" aria-label="Sushi Poços, início">
-          <span className="brand-mark" aria-hidden="true">SP</span>
+          <span className="brand-logo" aria-hidden="true" />
           <span><strong>Sushi Poços</strong><small>cozinha japonesa</small></span>
         </Link>
         <Link className="back-link" href="/">← Voltar ao cardápio</Link>
