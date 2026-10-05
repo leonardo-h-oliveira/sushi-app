@@ -188,6 +188,7 @@ feat/4-categories-api
 | `POST` | `/auth/login` | Authenticates a staff member |
 | `POST` | `/auth/logout` | Validates a staff session logout request |
 | `GET` | `/orders` | Lists orders for authenticated staff |
+| `GET` | `/orders/track/{tracking_token}` | Retrieves a privacy-minimized order status using a secure tracking reference |
 | `PATCH` | `/orders/{number}/status` | Updates an order status for authenticated staff |
 | `POST` | `/admin/categories` | Creates a category |
 | `GET` | `/admin/categories` | Lists active and inactive categories for staff |
@@ -208,6 +209,8 @@ feat/4-categories-api
 - Never commit `.env` files, passwords, tokens or database credentials.
 - Keep only safe example values in `.env.example`.
 - Staff routes require signed bearer authentication configured through the administrator environment variables.
+- Non-development environments fail closed if any administrator credential or signing secret still uses its development default.
+- Public order tracking uses a random token separate from the human-readable order number.
 - The legacy `X-Admin-Key` mechanism remains available only for compatible development and test flows.
 
 ## License

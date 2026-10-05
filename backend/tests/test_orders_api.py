@@ -75,7 +75,8 @@ def test_valid_checkout_creates_order_and_status_can_be_retrieved(
     assert order["total"] == "71.80"
     assert order["items"][0]["product_name"] == "Temaki Salmão"
 
-    retrieved = client.get(f"/orders/{order['number']}")
+    assert order["tracking_token"] != order["number"]
+    retrieved = client.get(f"/orders/track/{order['tracking_token']}")
     assert retrieved.status_code == 200
     assert retrieved.json()["total"] == "71.80"
     assert "customer_name" not in retrieved.json()
@@ -143,12 +144,30 @@ def test_invalid_order_data_returns_clear_errors(client: TestClient, product: Pr
         "/orders",
         json={"customer_name": "Ana", "phone": "35999999999", "fulfillment_method": "pickup", "payment_method": "pix", "items": [{"product_id": 999, "quantity": 1}]},
     )
-    unknown = client.get("/orders/SP000000-UNKNOWN")
+    unknown = client.get("/orders/track/unknown-token")
 
     assert missing_address.status_code == 422
     assert unavailable.status_code == 422
     assert unavailable.json()["detail"] == "One of the selected products is unavailable."
     assert unknown.status_code == 404
+
+
+def test_empty_required_variant_group_does_not_block_order(
+    client: TestClient, db_session: Session, product: Product
+) -> None:
+    db_session.add(ProductVariantGroup(product=product, name="Ainda configurando", required=True))
+    db_session.commit()
+    response = client.post(
+        "/orders",
+        json={
+            "customer_name": "Grupo Vazio",
+            "phone": "35999999999",
+            "fulfillment_method": "pickup",
+            "payment_method": "pix",
+            "items": [{"product_id": product.id, "quantity": 1}],
+        },
+    )
+    assert response.status_code == 201
 
 
 def test_admin_can_list_orders_and_update_status(client: TestClient, product: Product) -> None:

@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.config import settings
-from app.core.security import create_token, require_admin
+from app.core.security import create_token, ensure_admin_security_configured, require_admin
 from app.schemas.auth import LoginRequest, LoginResponse
 
 
@@ -14,6 +14,7 @@ Administrator = Annotated[None, Depends(require_admin)]
 
 @router.post("/login", response_model=LoginResponse)
 def login(payload: LoginRequest):
+    ensure_admin_security_configured()
     if not (
         secrets.compare_digest(payload.username, settings.admin_username)
         and secrets.compare_digest(payload.password, settings.admin_password)

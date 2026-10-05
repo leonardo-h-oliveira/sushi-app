@@ -4,6 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.API_URL ?? "http:
 
 export interface OrderResult {
   number: string;
+  tracking_token: string;
   status: string;
   fulfillment_method: "delivery" | "pickup";
   payment_method: "pix" | "card_on_delivery" | "cash";

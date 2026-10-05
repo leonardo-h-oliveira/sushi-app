@@ -46,7 +46,7 @@ def create_order(db: Session, payload: OrderCreate) -> Order:
         order_items.append(OrderItem(product=product, product_name=product.name, quantity=item_input.quantity, unit_price=unit_price, total=item_total, notes=item_input.notes, addons=addons, variants=variants))
 
     delivery_fee = DELIVERY_FEE if payload.fulfillment_method.value == "delivery" else Decimal("0.00")
-    order = Order(number=_order_number(), customer=customer, address=address, fulfillment_method=payload.fulfillment_method, payment_method=payload.payment_method, notes=payload.notes, subtotal=subtotal, delivery_fee=delivery_fee, total=subtotal + delivery_fee, items=order_items)
+    order = Order(number=_order_number(), tracking_token=secrets.token_urlsafe(24), customer=customer, address=address, fulfillment_method=payload.fulfillment_method, payment_method=payload.payment_method, notes=payload.notes, subtotal=subtotal, delivery_fee=delivery_fee, total=subtotal + delivery_fee, items=order_items)
     return order_repository.save(db, order)
 
 
@@ -57,7 +57,11 @@ def _selected_variants(product: Product, variant_ids: list[int]) -> list[OrderIt
             detail="A product variant cannot be selected more than once.",
         )
 
-    groups = [group for group in product.variant_groups if group.active]
+    groups = [
+        group
+        for group in product.variant_groups
+        if group.active and any(variant.active for variant in group.variants)
+    ]
     available = {
         variant.id: (group, variant)
         for group in groups
@@ -99,6 +103,13 @@ def _selected_variants(product: Product, variant_ids: list[int]) -> list[OrderIt
 
 def get_order(db: Session, number: str) -> Order:
     order = order_repository.get_by_number(db, number)
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found.")
+    return order
+
+
+def get_order_by_tracking_token(db: Session, tracking_token: str) -> Order:
+    order = order_repository.get_by_tracking_token(db, tracking_token)
     if order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found.")
     return order

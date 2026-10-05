@@ -205,6 +205,31 @@ export default function AdminMenuPage() {
     if (saved) setAddonForm({ product_id: "", name: "", price_delta: "" });
   }
 
+  async function editGroup(group: VariantGroup) {
+    const name = window.prompt("Nome do grupo de variantes", group.name)?.trim();
+    if (!name) return;
+    await saveOption(`/admin/variant-groups/${group.id}`, "PATCH", { name });
+  }
+
+  async function editOption(kind: "variants" | "addons", option: ProductOption) {
+    const name = window.prompt("Nome da opção", option.name)?.trim();
+    if (!name) return;
+    const price = window.prompt("Acréscimo em reais", option.price_delta);
+    if (price === null || price.trim() === "" || Number.isNaN(Number(price)) || Number(price) < 0) {
+      setError("Informe um acréscimo válido.");
+      return;
+    }
+    await saveOption(`/admin/${kind}/${option.id}`, "PATCH", {
+      name,
+      price_delta: Number(price),
+    });
+  }
+
+  async function toggleOption(path: string, active: boolean, label: string) {
+    if (active && !window.confirm(`Desativar ${label}? A opção deixará de aparecer para novos pedidos.`)) return;
+    await saveOption(path, "PATCH", { active: !active });
+  }
+
   if (!token) {
     return (
       <main className="mx-auto max-w-md px-6 py-20">
@@ -394,20 +419,23 @@ export default function AdminMenuPage() {
               <button type="button" className="mt-3 rounded-lg border px-3 py-2 text-sm font-bold" onClick={() => setEditingProduct(item)}>Editar produto</button>
               {item.variant_groups.map((group) => (
                 <div className="mt-3 border-t pt-2 text-xs" key={group.id}>
-                  <button type="button" className="font-bold underline" onClick={() => void saveOption(`/admin/variant-groups/${group.id}`, "PATCH", { active: !group.active })}>
+                  <button type="button" className="font-bold underline" onClick={() => void toggleOption(`/admin/variant-groups/${group.id}`, group.active, `o grupo ${group.name}`)}>
                     {group.name} · {group.active ? "deactivate" : "activate"}
                   </button>
+                  <button type="button" className="ml-2 underline" onClick={() => void editGroup(group)}>editar</button>
                   {group.variants.map((variant) => (
-                    <button type="button" className="ml-2 underline" key={variant.id} onClick={() => void saveOption(`/admin/variants/${variant.id}`, "PATCH", { active: !variant.active })}>
-                      {variant.name} ({variant.active ? "on" : "off"})
-                    </button>
+                    <span key={variant.id} className="ml-2 inline-flex gap-1">
+                      <button type="button" className="underline" onClick={() => void toggleOption(`/admin/variants/${variant.id}`, variant.active, variant.name)}>{variant.name} ({variant.active ? "on" : "off"})</button>
+                      <button type="button" className="underline" onClick={() => void editOption("variants", variant)}>editar</button>
+                    </span>
                   ))}
                 </div>
               ))}
               {item.addons.map((addon) => (
-                <button type="button" className="mr-2 mt-2 text-xs underline" key={addon.id} onClick={() => void saveOption(`/admin/addons/${addon.id}`, "PATCH", { active: !addon.active })}>
-                  + {addon.name} ({addon.active ? "on" : "off"})
-                </button>
+                <span key={addon.id} className="mr-2 mt-2 inline-flex gap-1 text-xs">
+                  <button type="button" className="underline" onClick={() => void toggleOption(`/admin/addons/${addon.id}`, addon.active, addon.name)}>+ {addon.name} ({addon.active ? "on" : "off"})</button>
+                  <button type="button" className="underline" onClick={() => void editOption("addons", addon)}>editar</button>
+                </span>
               ))}
             </article>
           ))}

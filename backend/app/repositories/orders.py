@@ -13,6 +13,15 @@ def get_by_number(db: Session, number: str) -> Order | None:
     return db.scalar(statement)
 
 
+def get_by_tracking_token(db: Session, tracking_token: str) -> Order | None:
+    statement = (
+        select(Order)
+        .options(*_loads())
+        .where(Order.tracking_token == tracking_token)
+    )
+    return db.scalar(statement)
+
+
 def list_orders(db: Session) -> list[Order]:
     statement = select(Order).options(*_loads()).order_by(Order.created_at.desc())
     return list(db.scalars(statement).all())

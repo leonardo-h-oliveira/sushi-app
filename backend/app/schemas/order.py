@@ -73,6 +73,7 @@ class OrderResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     number: str
+    tracking_token: str
     status: OrderStatus
     fulfillment_method: FulfillmentMethod
     payment_method: PaymentMethod

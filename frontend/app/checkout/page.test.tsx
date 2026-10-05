@@ -8,7 +8,7 @@ const item = { product_id: 1, name: "Temaki Salmão", quantity: 1, addon_ids: []
 beforeEach(() => {
   localStorage.clear();
   localStorage.setItem("sushi-cart", JSON.stringify([item]));
-  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ number: "SP260908-ABC123", status: "received", fulfillment_method: "pickup", payment_method: "pix", subtotal: "29.90", delivery_fee: "0.00", total: "29.90", items: [{ product_name: "Temaki Salmão", quantity: 1, unit_price: "29.90", total: "29.90" }] }) }));
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ number: "SP260908-ABC123", tracking_token: "secure-tracking-token", status: "received", fulfillment_method: "pickup", payment_method: "pix", subtotal: "29.90", delivery_fee: "0.00", total: "29.90", items: [{ product_name: "Temaki Salmão", quantity: 1, unit_price: "29.90", total: "29.90" }] }) }));
 });
 
 describe("CheckoutPage", () => {
@@ -33,7 +33,8 @@ describe("CheckoutPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /Confirmar pedido/ }));
 
     await waitFor(() => expect(screen.getByRole("heading", { name: "Obrigado por pedir com a gente." })).toBeInTheDocument());
-    expect(localStorage.getItem("last-order-number")).toBe("SP260908-ABC123");
+    expect(localStorage.getItem("last-order-tracking-token")).toBe("secure-tracking-token");
+    expect(screen.getByRole("link", { name: /Acompanhar pedido/ })).toHaveAttribute("href", "/orders/secure-tracking-token");
     expect(screen.getByRole("region", { name: "Resumo do pedido" })).toHaveTextContent("Temaki Salmão");
     expect(screen.getByRole("region", { name: "Resumo do pedido" })).toHaveTextContent("R$ 29,90");
   });

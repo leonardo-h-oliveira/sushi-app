@@ -26,7 +26,7 @@ beforeEach(() => {
 
 describe("OrderTrackingPage", () => {
   it("shows the current status and complete customer summary", async () => {
-    render(<OrderTrackingPage params={Promise.resolve({ number: "SP260908-ABC123" })} />);
+    render(<OrderTrackingPage params={Promise.resolve({ number: "secure-tracking-token" })} />);
 
     expect(await screen.findByRole("heading", { name: "Em preparo" })).toBeInTheDocument();
     const details = screen.getByRole("region", { name: "Detalhes do pedido" });
@@ -34,5 +34,6 @@ describe("OrderTrackingPage", () => {
     expect(details).toHaveTextContent("Entrega");
     expect(details).toHaveTextContent("PIX");
     expect(details).toHaveTextContent("R$ 34,90");
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining("/orders/track/secure-tracking-token"));
   });
 });

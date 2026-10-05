@@ -22,6 +22,11 @@ self.addEventListener("fetch", (event) => {
         void caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
       })
-      .catch(() => caches.match(event.request).then((cached) => cached || caches.match("/"))),
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+        if (event.request.mode === "navigate") return caches.match("/");
+        return Response.error();
+      }),
   );
 });
