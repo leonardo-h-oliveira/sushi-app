@@ -19,6 +19,11 @@ def list_categories(db: DatabaseSession):
     return category_service.list_active_categories(db)
 
 
+@router.get("/admin/categories", response_model=list[CategoryResponse])
+def list_all_categories(db: DatabaseSession, _: Administrator):
+    return category_service.list_all_categories(db)
+
+
 @router.post(
     "/admin/categories",
     response_model=CategoryResponse,
@@ -35,7 +40,7 @@ def update_category(
     db: DatabaseSession,
     _: Administrator,
 ):
-    return category_service.update_category(db, category_id, payload.name)
+    return category_service.update_category(db, category_id, payload)
 
 
 @router.delete(

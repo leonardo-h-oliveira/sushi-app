@@ -7,11 +7,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.database import get_db
+from app.core.config import settings
 from app.main import app
 from app.models import Base, Category
 
 
-ADMIN_HEADERS = {"X-Admin-Key": "local-development-only"}
+ADMIN_HEADERS = {"X-Admin-Key": settings.admin_api_key}
 
 
 @pytest.fixture
@@ -82,6 +83,18 @@ def test_administrator_can_create_update_and_deactivate_category(
     )
     assert deactivated.status_code == 204
     assert client.get("/categories").json() == []
+
+    admin_categories = client.get("/admin/categories", headers=ADMIN_HEADERS)
+    assert admin_categories.status_code == 200
+    assert admin_categories.json()[0]["active"] is False
+
+    reactivated = client.patch(
+        f"/admin/categories/{category_id}",
+        headers=ADMIN_HEADERS,
+        json={"active": True},
+    )
+    assert reactivated.status_code == 200
+    assert client.get("/categories").json()[0]["name"] == "Temakis Premium"
 
 
 def test_management_requires_valid_administrator_key(client: TestClient) -> None:

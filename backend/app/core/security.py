@@ -12,19 +12,36 @@ from fastapi import Header, HTTPException, status
 from app.core.config import settings
 
 
+UNSAFE_PRODUCTION_VALUES = {
+    "admin_api_key": "local-development-only",
+    "admin_username": "admin",
+    "admin_password": "local-development-only",
+    "auth_secret": "local-development-only",
+}
+
+
+def ensure_admin_security_configured() -> None:
+    """Fail closed when a deployed environment still uses development credentials."""
+    if settings.environment.lower() in {"development", "test"}:
+        return
+    unsafe = [
+        name
+        for name, unsafe_value in UNSAFE_PRODUCTION_VALUES.items()
+        if getattr(settings, name) == unsafe_value
+    ]
+    if unsafe:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Administrator access is not configured safely.",
+        )
+
+
 def require_admin(
     admin_api_key: Annotated[str | None, Header(alias="X-Admin-Key")] = None,
     authorization: Annotated[str | None, Header()] = None,
 ) -> None:
     """Accept a signed administrator bearer session or the legacy API key."""
-    if (
-        settings.environment.lower() not in {"development", "test"}
-        and settings.admin_api_key == "local-development-only"
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Administrator access is not configured.",
-        )
+    ensure_admin_security_configured()
 
     if authorization and authorization.startswith("Bearer "):
         if verify_token(authorization.removeprefix("Bearer ")):

@@ -5,7 +5,13 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.core.security import require_admin
-from app.schemas.order import AddressInput, OrderCreate, OrderResponse, OrderStatusUpdate
+from app.schemas.order import (
+    AddressInput,
+    OrderCreate,
+    OrderResponse,
+    OrderStatusUpdate,
+    PublicOrderResponse,
+)
 from app.services import orders as order_service
 
 
@@ -18,9 +24,9 @@ def create_order(payload: OrderCreate, db: DatabaseSession):
     return _response(order_service.create_order(db, payload))
 
 
-@router.get("/{number}", response_model=OrderResponse)
-def get_order(number: str, db: DatabaseSession):
-    return _response(order_service.get_order(db, number))
+@router.get("/track/{tracking_token}", response_model=PublicOrderResponse)
+def track_order(tracking_token: str, db: DatabaseSession):
+    return order_service.get_order_by_tracking_token(db, tracking_token)
 
 
 @router.get("", response_model=list[OrderResponse], dependencies=[Depends(require_admin)])
@@ -37,6 +43,7 @@ def _response(order):
     response = OrderResponse.model_validate(
         {
             "number": order.number,
+            "tracking_token": order.tracking_token,
             "status": order.status,
             "fulfillment_method": order.fulfillment_method,
             "payment_method": order.payment_method,
