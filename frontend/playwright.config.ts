@@ -1,0 +1,39 @@
+import { defineConfig, devices } from "@playwright/test";
+
+const apiUrl = "http://127.0.0.1:8000";
+
+export default defineConfig({
+  testDir: "./e2e",
+  fullyParallel: false,
+  retries: process.env.CI ? 1 : 0,
+  reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
+  use: {
+    baseURL: "http://127.0.0.1:3000",
+    screenshot: "only-on-failure",
+    trace: "retain-on-failure",
+  },
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  webServer: [
+    {
+      command: "python -m alembic -c ../backend/alembic.ini upgrade head && python ../backend/seed.py && python -m uvicorn app.main:app --app-dir ../backend --host 127.0.0.1 --port 8000",
+      url: `${apiUrl}/health`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+      env: {
+        DATABASE_URL: "sqlite:///./e2e.db",
+        ENVIRONMENT: "test",
+        ADMIN_USERNAME: "e2e-admin",
+        ADMIN_PASSWORD: "e2e-password",
+        AUTH_SECRET: "e2e-auth-secret-with-sufficient-length",
+        CORS_ORIGINS: "http://127.0.0.1:3000",
+      },
+    },
+    {
+      command: "pnpm dev --hostname 127.0.0.1",
+      url: "http://127.0.0.1:3000",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+      env: { API_URL: apiUrl, NEXT_PUBLIC_API_URL: apiUrl },
+    },
+  ],
+});
