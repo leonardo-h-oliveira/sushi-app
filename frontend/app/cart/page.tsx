@@ -14,9 +14,14 @@ export default function CartPage() {
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]") as CartItem[];
+    const storedFulfillment = localStorage.getItem("sushi-fulfillment");
     // localStorage is only available after hydration; synchronize browser state once.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(stored);
+    if (storedFulfillment === "pickup" || storedFulfillment === "delivery") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFulfillment(storedFulfillment);
+    }
   }, []);
 
   const subtotal = useMemo(
@@ -39,6 +44,11 @@ export default function CartPage() {
 
   function removeItem(index: number) {
     persist(items.filter((_, itemIndex) => itemIndex !== index));
+  }
+
+  function changeFulfillment(nextFulfillment: "delivery" | "pickup") {
+    setFulfillment(nextFulfillment);
+    localStorage.setItem("sushi-fulfillment", nextFulfillment);
   }
 
   return (
@@ -84,8 +94,8 @@ export default function CartPage() {
             </div>
             <aside className="cart-summary" aria-label="Resumo do pedido">
               <h2>Resumo</h2>
-              <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "delivery"} onChange={() => setFulfillment("delivery")} /> Entrega <span>{money.format(DELIVERY_FEE)}</span></label>
-              <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "pickup"} onChange={() => setFulfillment("pickup")} /> Retirada <span>Grátis</span></label>
+              <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "delivery"} onChange={() => changeFulfillment("delivery")} /> Entrega <span>{money.format(DELIVERY_FEE)}</span></label>
+              <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "pickup"} onChange={() => changeFulfillment("pickup")} /> Retirada <span>Grátis</span></label>
               <dl><div><dt>Subtotal</dt><dd>{money.format(subtotal)}</dd></div><div><dt>Entrega</dt><dd>{deliveryFee ? money.format(deliveryFee) : "Grátis"}</dd></div><div className="total-line"><dt>Total</dt><dd>{money.format(subtotal + deliveryFee)}</dd></div></dl>
               <Link className="primary-button checkout-button" href="/checkout">Continuar para checkout →</Link>
               <p className="checkout-hint">Você poderá revisar endereço e pagamento na próxima etapa.</p>

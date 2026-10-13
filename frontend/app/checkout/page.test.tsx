@@ -25,11 +25,13 @@ describe("CheckoutPage", () => {
   });
 
   it("supports pickup and confirms a valid order review", async () => {
+    localStorage.setItem("sushi-fulfillment", "pickup");
     render(<CheckoutPage />);
     await screen.findByRole("heading", { name: "Como vamos entregar?" });
+    expect(screen.getByLabelText(/Retirada/)).toBeChecked();
+    expect(screen.queryByRole("group", { name: "Endereço de entrega" })).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Nome completo"), { target: { value: "Ana Sushi" } });
     fireEvent.change(screen.getByLabelText("Telefone"), { target: { value: "35999999999" } });
-    fireEvent.click(screen.getByLabelText(/Retirada/));
     fireEvent.click(screen.getByRole("button", { name: /Confirmar pedido/ }));
 
     await waitFor(() => expect(screen.getByRole("heading", { name: "Obrigado por pedir com a gente." })).toBeInTheDocument());

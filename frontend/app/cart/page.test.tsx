@@ -35,4 +35,18 @@ describe("CartPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Remover" }));
     expect(await screen.findByText("Ainda não há itens por aqui.")).toBeInTheDocument();
   });
+
+  it("stores the selected fulfillment method for checkout", async () => {
+    localStorage.setItem("sushi-cart", JSON.stringify([{
+      product_id: 1, name: "Temaki Salmão", quantity: 1, addon_ids: [], addon_names: [],
+      variant_ids: [], variant_names: [], notes: "", unit_total: "29.90",
+    }]));
+    render(<CartPage />);
+
+    await screen.findByText("Temaki Salmão");
+    fireEvent.click(screen.getByLabelText(/Retirada/));
+
+    expect(localStorage.getItem("sushi-fulfillment")).toBe("pickup");
+    expect(screen.getByText("R$ 29,90", { selector: ".total-line dd" })).toBeInTheDocument();
+  });
 });

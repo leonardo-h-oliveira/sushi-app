@@ -38,7 +38,7 @@ export default function AdminOrdersPage() {
     const response = await fetch(`${API_URL}/orders`, { credentials: "include" });
     if (response.status === 401) {
       setAuthenticated(false);
-      setError("Your administrator session expired. Please sign in again.");
+      setError("");
     } else if (!response.ok) setError("Unable to load orders.");
     else setOrders(await response.json());
     setLoading(false);
@@ -51,7 +51,7 @@ export default function AdminOrdersPage() {
   async function signIn(event: FormEvent) {
     event.preventDefault(); setError("");
     const response = await fetch(`${API_URL}/auth/login`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) });
-    if (!response.ok) { setError("Invalid administrator credentials."); return; }
+    if (!response.ok) { setError("Usuário ou senha inválidos."); return; }
     setAuthenticated(true); setPassword(""); void loadOrders();
   }
 
