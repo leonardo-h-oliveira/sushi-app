@@ -22,7 +22,7 @@ test("customer order moves through staff workflow and tracking", async ({ page }
 
   await expect(page.getByRole("heading", { name: "Obrigado por pedir com a gente." })).toBeVisible();
   const trackingHref = await page.getByRole("link", { name: /Acompanhar pedido/ }).getAttribute("href");
-  expect(trackingHref).toMatch(/^\/orders\/[0-9a-f-]+$/);
+  expect(trackingHref).toMatch(/^\/orders\/[A-Za-z0-9_-]{32}$/);
   const orderNumber = (await page.getByText(/Seu número é/).locator("strong").innerText()).trim();
 
   await page.goto("/admin/orders");
