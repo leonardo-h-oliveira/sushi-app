@@ -9,6 +9,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.database import get_db
 from app.core.config import settings
+from app.core.security import _attempts
 from app.main import app
 from app.models import (
     Base,
@@ -150,6 +151,20 @@ def test_invalid_order_data_returns_clear_errors(client: TestClient, product: Pr
     assert unavailable.status_code == 422
     assert unavailable.json()["detail"] == "One of the selected products is unavailable."
     assert unknown.status_code == 404
+
+
+def test_public_tracking_is_rate_limited(client: TestClient) -> None:
+    original_limit = settings.tracking_rate_limit
+    try:
+        object.__setattr__(settings, "tracking_rate_limit", 1)
+        _attempts.clear()
+        assert client.get("/orders/track/unknown-token").status_code == 404
+        blocked = client.get("/orders/track/unknown-token")
+        assert blocked.status_code == 429
+        assert blocked.headers["retry-after"] == "60"
+    finally:
+        object.__setattr__(settings, "tracking_rate_limit", original_limit)
+        _attempts.clear()
 
 
 def test_empty_required_variant_group_does_not_block_order(
