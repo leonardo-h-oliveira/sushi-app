@@ -5,9 +5,10 @@ import hashlib
 import hmac
 import json
 import time
+from collections import defaultdict, deque
 from typing import Annotated
 
-from fastapi import Header, HTTPException, status
+from fastapi import Cookie, Header, HTTPException, Request, status
 
 from app.core.config import settings
 
@@ -18,6 +19,24 @@ UNSAFE_PRODUCTION_VALUES = {
     "admin_password": "local-development-only",
     "auth_secret": "local-development-only",
 }
+
+_attempts: dict[str, deque[float]] = defaultdict(deque)
+
+
+def enforce_rate_limit(request: Request, scope: str, limit: int, window_seconds: int = 60) -> None:
+    """Apply a per-client limiter for the single-instance MVP deployment."""
+    client = request.client.host if request.client else "unknown"
+    attempts = _attempts[f"{scope}:{client}"]
+    now = time.monotonic()
+    while attempts and attempts[0] <= now - window_seconds:
+        attempts.popleft()
+    if len(attempts) >= limit:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many requests. Try again shortly.",
+            headers={"Retry-After": str(window_seconds)},
+        )
+    attempts.append(now)
 
 
 def ensure_admin_security_configured() -> None:
@@ -37,17 +56,25 @@ def ensure_admin_security_configured() -> None:
 
 
 def require_admin(
+    admin_session: Annotated[str | None, Cookie(alias=settings.auth_cookie_name)] = None,
     admin_api_key: Annotated[str | None, Header(alias="X-Admin-Key")] = None,
     authorization: Annotated[str | None, Header()] = None,
 ) -> None:
     """Accept a signed administrator bearer session or the legacy API key."""
     ensure_admin_security_configured()
 
-    if authorization and authorization.startswith("Bearer "):
-        if verify_token(authorization.removeprefix("Bearer ")):
+    bearer = authorization.removeprefix("Bearer ") if authorization and authorization.startswith("Bearer ") else None
+    token = admin_session or bearer
+    if token:
+        if verify_token(token):
             return
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The administrator session is invalid or expired.")
 
+    if settings.environment.lower() not in {"development", "test"}:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="An administrator session is required.",
+        )
     if not admin_api_key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

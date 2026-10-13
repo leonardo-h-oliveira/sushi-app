@@ -1,10 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.core.security import require_admin
+from app.core.config import settings
+from app.core.security import enforce_rate_limit, require_admin
 from app.schemas.order import (
     AddressInput,
     OrderCreate,
@@ -25,7 +26,8 @@ def create_order(payload: OrderCreate, db: DatabaseSession):
 
 
 @router.get("/track/{tracking_token}", response_model=PublicOrderResponse)
-def track_order(tracking_token: str, db: DatabaseSession):
+def track_order(tracking_token: str, request: Request, db: DatabaseSession):
+    enforce_rate_limit(request, "order-tracking", settings.tracking_rate_limit)
     return order_service.get_order_by_tracking_token(db, tracking_token)
 
 

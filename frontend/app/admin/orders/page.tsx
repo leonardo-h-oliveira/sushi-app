@@ -26,51 +26,49 @@ type Order = {
 };
 
 export default function AdminOrdersPage() {
-  const [token, setToken] = useState<string | null>(() => typeof window === "undefined" ? null : localStorage.getItem("admin-token"));
+  const [authenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function loadOrders(session: string) {
+  async function loadOrders() {
     setLoading(true);
-    const response = await fetch(`${API_URL}/orders`, { headers: { Authorization: `Bearer ${session}` } });
+    const response = await fetch(`${API_URL}/orders`, { credentials: "include" });
     if (response.status === 401) {
-      localStorage.removeItem("admin-token");
-      setToken(null);
+      setAuthenticated(false);
       setError("Your administrator session expired. Please sign in again.");
     } else if (!response.ok) setError("Unable to load orders.");
     else setOrders(await response.json());
     setLoading(false);
   }
 
-  // The effect synchronizes the dashboard with an existing session restored from storage.
+  // The HttpOnly cookie is sent by the browser and cannot be read by JavaScript.
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { if (token) void loadOrders(token); }, [token]);
+  useEffect(() => { void loadOrders(); }, []);
 
   async function signIn(event: FormEvent) {
     event.preventDefault(); setError("");
-    const response = await fetch(`${API_URL}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) });
+    const response = await fetch(`${API_URL}/auth/login`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) });
     if (!response.ok) { setError("Invalid administrator credentials."); return; }
-    const session = (await response.json()).access_token as string;
-    localStorage.setItem("admin-token", session); setToken(session); setPassword(""); void loadOrders(session);
+    setAuthenticated(true); setPassword(""); void loadOrders();
   }
 
   async function changeStatus(number: string, status: string) {
-    if (!token) return;
-    const response = await fetch(`${API_URL}/orders/${number}/status`, { method: "PATCH", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
+    if (!authenticated) return;
+    const response = await fetch(`${API_URL}/orders/${number}/status`, { method: "PATCH", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
     if (response.ok) setOrders((current) => current.map((order) => order.number === number ? { ...order, status } : order));
     else setError("Unable to update this order.");
   }
 
-  if (!token) return <main className="mx-auto flex min-h-screen max-w-md items-center px-6"><form onSubmit={signIn} className="w-full space-y-4 rounded-3xl bg-white p-8 shadow-xl"><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-3xl font-black text-slate-950">Staff sign in</h1><input aria-label="Username" value={username} onChange={(event) => setUsername(event.target.value)} className="w-full rounded-xl border p-3" placeholder="Username" /><input aria-label="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-xl border p-3" placeholder="Password" /><button className="w-full rounded-xl bg-slate-950 p-3 font-bold text-white">Sign in</button>{error && <p role="alert" className="text-sm text-red-600">{error}</p>}</form></main>;
+  if (!authenticated) return <main className="mx-auto flex min-h-screen max-w-md items-center px-6"><form onSubmit={signIn} className="w-full space-y-4 rounded-3xl bg-white p-8 shadow-xl"><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-3xl font-black text-slate-950">Staff sign in</h1><input aria-label="Username" value={username} onChange={(event) => setUsername(event.target.value)} className="w-full rounded-xl border p-3" placeholder="Username" /><input aria-label="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-xl border p-3" placeholder="Password" /><button className="w-full rounded-xl bg-slate-950 p-3 font-bold text-white">Sign in</button>{error && <p role="alert" className="text-sm text-red-600">{error}</p>}</form></main>;
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-6 py-10">
       <header className="mb-8 flex items-center justify-between">
         <div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-4xl font-black text-slate-950">Painel de pedidos</h1></div>
-        <button onClick={() => { localStorage.removeItem("admin-token"); setToken(null); }} className="rounded-xl border px-4 py-2 text-sm font-bold">Sair</button>
+        <button onClick={() => { void fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); setAuthenticated(false); }} className="rounded-xl border px-4 py-2 text-sm font-bold">Sair</button>
       </header>
       {error && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-red-700">{error}</p>}
       {loading ? <p>Carregando pedidos…</p> : orders.length === 0 ? <p className="rounded-2xl bg-white p-8 text-slate-600">Nenhum pedido recebido.</p> : (

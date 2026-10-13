@@ -36,9 +36,7 @@ const EMPTY_PRODUCT = {
 };
 
 export default function AdminMenuPage() {
-  const [token, setToken] = useState<string | null>(() =>
-    typeof window === "undefined" ? null : localStorage.getItem("admin-token"),
-  );
+  const [authenticated, setAuthenticated] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [category, setCategory] = useState("");
@@ -50,36 +48,34 @@ export default function AdminMenuPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  async function load(session: string) {
-    const headers = { Authorization: `Bearer ${session}` };
+  async function load() {
     const [cats, items] = await Promise.all([
-      fetch(`${API_URL}/admin/categories`, { headers }),
-      fetch(`${API_URL}/admin/products`, { headers }),
+      fetch(`${API_URL}/admin/categories`, { credentials: "include" }),
+      fetch(`${API_URL}/admin/products`, { credentials: "include" }),
     ]);
     if (cats.status === 401 || items.status === 401) {
-      localStorage.removeItem("admin-token");
-      setToken(null);
+      setAuthenticated(false);
       setError("Your administrator session expired.");
-      return;
+      return false;
     }
     setCategories(await cats.json());
     setProducts(await items.json());
+    return true;
   }
 
   useEffect(() => {
-    if (token) {
-      // Loading remote data is the synchronization this effect performs.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      void load(token);
-    }
-  }, [token]);
+    // Loading remote data is the synchronization this effect performs.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void load().then(setAuthenticated);
+  }, []);
 
   async function createCategory(event: FormEvent) {
     event.preventDefault();
-    if (!token) return;
+    if (!authenticated) return;
     const response = await fetch(`${API_URL}/admin/categories`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: category }),
     });
     if (!response.ok) {
@@ -87,41 +83,44 @@ export default function AdminMenuPage() {
       return;
     }
     setCategory("");
-    void load(token);
+    void load();
   }
 
   async function updateCategory(event: FormEvent) {
     event.preventDefault();
-    if (!token || !editingCategory) return;
+    if (!authenticated || !editingCategory) return;
     const response = await fetch(`${API_URL}/admin/categories/${editingCategory.id}`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: editingCategory.name }),
     });
     if (!response.ok) return setError("Não foi possível atualizar a categoria.");
     setEditingCategory(null);
     setError("");
-    void load(token);
+    void load();
   }
 
   async function setCategoryActive(item: Category) {
-    if (!token || (item.active && !window.confirm("Desativar esta categoria e ocultar seus produtos do cardápio?"))) return;
+    if (!authenticated || (item.active && !window.confirm("Desativar esta categoria e ocultar seus produtos do cardápio?"))) return;
     const response = await fetch(`${API_URL}/admin/categories/${item.id}`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ active: !item.active }),
     });
     if (!response.ok) return setError("Não foi possível desativar a categoria.");
     setError("");
-    void load(token);
+    void load();
   }
 
   async function createProduct(event: FormEvent) {
     event.preventDefault();
-    if (!token) return;
+    if (!authenticated) return;
     const response = await fetch(`${API_URL}/admin/products`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...product,
         price: Number(product.price),
@@ -134,15 +133,16 @@ export default function AdminMenuPage() {
       return;
     }
     setProduct(EMPTY_PRODUCT);
-    void load(token);
+    void load();
   }
 
   async function updateProduct(event: FormEvent) {
     event.preventDefault();
-    if (!token || !editingProduct) return;
+    if (!authenticated || !editingProduct) return;
     const response = await fetch(`${API_URL}/admin/products/${editingProduct.id}`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: editingProduct.name,
         description: editingProduct.description,
@@ -156,14 +156,15 @@ export default function AdminMenuPage() {
     if (!response.ok) return setError("Não foi possível atualizar o produto. Confira preço e campos.");
     setEditingProduct(null);
     setError("");
-    void load(token);
+    void load();
   }
 
   async function saveOption(path: string, method: "POST" | "PATCH", body: object) {
-    if (!token) return false;
+    if (!authenticated) return false;
     const response = await fetch(`${API_URL}${path}`, {
       method,
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
     if (!response.ok) {
@@ -171,7 +172,7 @@ export default function AdminMenuPage() {
       return false;
     }
     setError("");
-    await load(token);
+    await load();
     return true;
   }
 
@@ -230,7 +231,7 @@ export default function AdminMenuPage() {
     await saveOption(path, "PATCH", { active: !active });
   }
 
-  if (!token) {
+  if (!authenticated) {
     return (
       <main className="mx-auto max-w-md px-6 py-20">
         <h1 className="mb-4 text-3xl font-black">Menu management</h1>
@@ -251,8 +252,8 @@ export default function AdminMenuPage() {
         </div>
         <button
           onClick={() => {
-            localStorage.removeItem("admin-token");
-            setToken(null);
+            void fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" });
+            setAuthenticated(false);
           }}
           className="rounded-xl border px-4 py-2 font-bold"
         >

@@ -26,6 +26,9 @@ class Settings:
     admin_username: str = os.getenv("ADMIN_USERNAME", "admin")
     admin_password: str = os.getenv("ADMIN_PASSWORD", "local-development-only")
     auth_secret: str = os.getenv("AUTH_SECRET", "local-development-only")
+    auth_cookie_name: str = os.getenv("AUTH_COOKIE_NAME", "sushi_admin_session")
+    login_rate_limit: int = int(os.getenv("LOGIN_RATE_LIMIT", "5"))
+    tracking_rate_limit: int = int(os.getenv("TRACKING_RATE_LIMIT", "60"))
     cors_origins: tuple[str, ...] = _csv_environment(
         "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
     )
