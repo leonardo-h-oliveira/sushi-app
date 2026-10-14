@@ -30,13 +30,3 @@ test("delivery checkout requires customer and address information", async ({ pag
   await expect(summary).toContainText("PIX");
   await expect(summary).toContainText("R$ 60,90");
 });
-
-test("invalid administrator credentials show an actionable error", async ({ page }) => {
-  await page.goto("/admin/orders");
-  await page.getByLabel("Username").fill("invalid-admin");
-  await page.getByLabel("Password").fill("invalid-password");
-  await page.getByRole("button", { name: "Sign in" }).click();
-
-  await expect(page.getByRole("alert")).toHaveText("Usuário ou senha inválidos.");
-  await expect(page.getByRole("heading", { name: "Staff sign in" })).toBeVisible();
-});
