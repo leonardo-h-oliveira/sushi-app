@@ -4,6 +4,7 @@ from app.models.category import Category
 from app.models.customer import Customer
 from app.models.order import Order, OrderItem, OrderItemAddon, OrderItemVariant
 from app.models.product import Product, ProductAddon, ProductVariant, ProductVariantGroup
+from app.models.store_settings import StoreSettings
 
 __all__ = [
     "Address",
@@ -18,4 +19,5 @@ __all__ = [
     "ProductAddon",
     "ProductVariant",
     "ProductVariantGroup",
+    "StoreSettings",
 ]

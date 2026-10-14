@@ -185,11 +185,14 @@ feat/4-categories-api
 | `GET` | `/categories` | Lists active menu categories |
 | `GET` | `/products` | Lists available products; accepts a `category` slug filter |
 | `GET` | `/products/{id}` | Retrieves an available product |
+| `GET` | `/store-settings` | Lists customer-visible operational settings |
 | `POST` | `/auth/login` | Authenticates a staff member |
 | `POST` | `/auth/logout` | Validates a staff session logout request |
 | `GET` | `/orders` | Lists orders for authenticated staff |
 | `GET` | `/orders/track/{tracking_token}` | Retrieves a privacy-minimized order status using a secure tracking reference |
 | `PATCH` | `/orders/{number}/status` | Updates an order status for authenticated staff |
+| `GET` | `/admin/store-settings` | Retrieves operational settings for staff |
+| `PATCH` | `/admin/store-settings` | Updates availability, fees, minimum order and payments |
 | `POST` | `/admin/categories` | Creates a category |
 | `GET` | `/admin/categories` | Lists active and inactive categories for staff |
 | `PATCH` | `/admin/categories/{id}` | Renames or updates a category |

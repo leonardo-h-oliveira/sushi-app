@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
 const statuses = ["received", "preparing", "ready", "out_for_delivery", "completed", "cancelled"] as const;
@@ -67,7 +68,7 @@ export default function AdminOrdersPage() {
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-6 py-10">
       <header className="mb-8 flex items-center justify-between">
-        <div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-4xl font-black text-slate-950">Painel de pedidos</h1></div>
+        <div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-4xl font-black text-slate-950">Painel de pedidos</h1><nav className="mt-3 flex gap-4 text-sm font-bold"><Link href="/admin/menu">Cardápio</Link><Link href="/admin/settings">Configurações</Link></nav></div>
         <button onClick={() => { void fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); setAuthenticated(false); }} className="rounded-xl border px-4 py-2 text-sm font-bold">Sair</button>
       </header>
       {error && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-red-700">{error}</p>}

@@ -4,13 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import type { CartItem } from "@/types/cart";
+import { DEFAULT_STORE_SETTINGS, fetchStoreSettings, type StoreSettings } from "@/lib/store-settings";
 
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
-const DELIVERY_FEE = 5;
 
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [fulfillment, setFulfillment] = useState<"delivery" | "pickup">("delivery");
+  const [store, setStore] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]") as CartItem[];
@@ -19,16 +20,20 @@ export default function CartPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(stored);
     if (storedFulfillment === "pickup" || storedFulfillment === "delivery") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFulfillment(storedFulfillment);
     }
+    void fetchStoreSettings().then((settings) => {
+      setStore(settings);
+      if ((!settings.delivery_enabled || !settings.is_open) && settings.pickup_enabled) setFulfillment("pickup");
+      else if (!settings.pickup_enabled && settings.delivery_enabled) setFulfillment("delivery");
+    }).catch(() => undefined);
   }, []);
 
   const subtotal = useMemo(
     () => items.reduce((total, item) => total + Number(item.unit_total ?? 0) * item.quantity, 0),
     [items],
   );
-  const deliveryFee = fulfillment === "delivery" && items.length > 0 ? DELIVERY_FEE : 0;
+  const deliveryFee = fulfillment === "delivery" && items.length > 0 ? Number(store.delivery_fee) : 0;
 
   function persist(nextItems: CartItem[]) {
     setItems(nextItems);
@@ -94,10 +99,12 @@ export default function CartPage() {
             </div>
             <aside className="cart-summary" aria-label="Resumo do pedido">
               <h2>Resumo</h2>
-              <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "delivery"} onChange={() => changeFulfillment("delivery")} /> Entrega <span>{money.format(DELIVERY_FEE)}</span></label>
-              <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "pickup"} onChange={() => changeFulfillment("pickup")} /> Retirada <span>Grátis</span></label>
+              {!store.is_open && <p className="form-error" role="alert">O estabelecimento está fechado para novos pedidos.</p>}
+              {store.delivery_enabled && <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "delivery"} onChange={() => changeFulfillment("delivery")} /> Entrega <span>{money.format(Number(store.delivery_fee))}</span></label>}
+              {store.pickup_enabled && <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "pickup"} onChange={() => changeFulfillment("pickup")} /> Retirada <span>Grátis</span></label>}
               <dl><div><dt>Subtotal</dt><dd>{money.format(subtotal)}</dd></div><div><dt>Entrega</dt><dd>{deliveryFee ? money.format(deliveryFee) : "Grátis"}</dd></div><div className="total-line"><dt>Total</dt><dd>{money.format(subtotal + deliveryFee)}</dd></div></dl>
-              <Link className="primary-button checkout-button" href="/checkout">Continuar para checkout →</Link>
+              {Number(store.minimum_order) > 0 && <p className="checkout-hint">Pedido mínimo: {money.format(Number(store.minimum_order))}</p>}
+              {store.is_open && (store.delivery_enabled || store.pickup_enabled) && <Link className="primary-button checkout-button" href="/checkout">Continuar para checkout →</Link>}
               <p className="checkout-hint">Você poderá revisar endereço e pagamento na próxima etapa.</p>
             </aside>
           </div>
