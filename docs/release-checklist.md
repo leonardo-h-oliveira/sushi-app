@@ -30,6 +30,7 @@ Este checklist define quando o Sushi App pode ser chamado de MVP concluído. Cad
 - [ ] O restaurante percorre os estados até concluir o pedido.
 - [ ] O cliente visualiza o novo status na página de acompanhamento.
 - [ ] Produtos, preços, imagens, categorias e disponibilidade podem ser administrados.
+- [ ] O estabelecimento pode abrir/fechar pedidos e configurar entrega, retirada, taxa, pedido mínimo e pagamentos.
 
 ## Qualidade
 

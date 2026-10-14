@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
 
@@ -249,6 +250,7 @@ export default function AdminMenuPage() {
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p>
           <h1 className="text-4xl font-black">Menu management</h1>
+          <nav className="mt-3 flex gap-4 text-sm font-bold"><Link href="/admin/orders">Pedidos</Link><Link href="/admin/settings">Configurações</Link></nav>
         </div>
         <button
           onClick={() => {
