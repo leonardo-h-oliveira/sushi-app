@@ -78,8 +78,8 @@ export default function CheckoutPage() {
       setError("Para entrega, informe rua, número e bairro.");
       return;
     }
-    if (payment === "cash" && !changeFor.trim()) {
-      setError("Informe para qual valor precisamos preparar o troco.");
+    if (payment === "cash" && changeFor && Number(changeFor) < total) {
+      setError("O valor para troco deve cobrir o total do pedido.");
       return;
     }
     setSubmitting(true);
@@ -87,7 +87,8 @@ export default function CheckoutPage() {
       const order = await createOrder({
         customer_name: customerName.trim(), phone: phone.trim(), fulfillment_method: fulfillment,
         payment_method: payment, address: fulfillment === "delivery" ? address : null,
-        notes: `${notes}${payment === "cash" ? ` Troco para ${changeFor}.` : ""}`.trim() || null,
+        notes: notes.trim() || null,
+        cash_change_for: payment === "cash" && changeFor ? changeFor : null,
         items: cartItemsToOrderItems(items),
         expected_total: total.toFixed(2),
       });
@@ -108,7 +109,7 @@ export default function CheckoutPage() {
 
   if (confirmed) {
     if (!confirmedOrder) return null;
-    return <main className="state-page"><span className="state-symbol" aria-hidden="true">✓</span><p className="eyebrow">Pedido confirmado</p><h1>Obrigado por pedir com a gente.</h1><p>Seu número é <strong>{confirmedOrder.number}</strong>.</p><section className="order-confirmation" aria-label="Resumo do pedido"><ul>{confirmedOrder.items.map((item, index) => <li key={`${item.product_name}-${index}`}>{item.quantity}× {item.product_name} — {money.format(Number(item.total))}</li>)}</ul><p>Recebimento: <strong>{confirmedOrder.fulfillment_method === "delivery" ? "Entrega" : "Retirada"}</strong></p><p>Pagamento: <strong>{confirmedOrder.payment_method === "pix" ? "PIX" : confirmedOrder.payment_method === "cash" ? "Dinheiro" : "Cartão na entrega"}</strong></p><p>Status: <strong>Recebido</strong></p><p>Total: <strong>{money.format(Number(confirmedOrder.total))}</strong></p></section><Link className="primary-button" href={`/orders/${confirmedOrder.tracking_token}`}>Acompanhar pedido →</Link></main>;
+    return <main className="state-page"><span className="state-symbol" aria-hidden="true">✓</span><p className="eyebrow">Pedido confirmado</p><h1>Obrigado por pedir com a gente.</h1><p>Seu número é <strong>{confirmedOrder.number}</strong>.</p><section className="order-confirmation" aria-label="Resumo do pedido"><ul>{confirmedOrder.items.map((item, index) => <li key={`${item.product_name}-${index}`}>{item.quantity}× {item.product_name} — {money.format(Number(item.total))}</li>)}</ul><p>Recebimento: <strong>{confirmedOrder.fulfillment_method === "delivery" ? "Entrega" : "Retirada"}</strong></p><p>Pagamento: <strong>{confirmedOrder.payment_method === "pix" ? "PIX" : confirmedOrder.payment_method === "cash" ? "Dinheiro" : "Cartão na entrega"}</strong></p><p>{confirmedOrder.cash_change_for ? `Troco para ${money.format(Number(confirmedOrder.cash_change_for))}.` : ""}</p><p>Status: <strong>Recebido</strong></p><p>Total: <strong>{money.format(Number(confirmedOrder.total))}</strong></p></section><Link className="primary-button" href={`/orders/${confirmedOrder.tracking_token}`}>Acompanhar pedido →</Link></main>;
   }
 
   if (items.length === 0) {
@@ -129,7 +130,7 @@ export default function CheckoutPage() {
             <fieldset><legend>Seus dados</legend><label>Nome completo<input required value={customerName} onChange={(event) => setCustomerName(event.target.value)} placeholder="Como podemos chamar você?" /></label><label>Telefone<input required value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="(35) 99999-9999" inputMode="tel" /></label></fieldset>
             <fieldset><legend>Recebimento</legend><div className="choice-grid">{store.delivery_enabled && <label className={fulfillment === "delivery" ? "choice selected" : "choice"}><input type="radio" name="fulfillment" checked={fulfillment === "delivery"} onChange={() => { setFulfillment("delivery"); localStorage.setItem("sushi-fulfillment", "delivery"); }} /> Entrega <small>Receba em casa</small></label>}{store.pickup_enabled && <label className={fulfillment === "pickup" ? "choice selected" : "choice"}><input type="radio" name="fulfillment" checked={fulfillment === "pickup"} onChange={() => { setFulfillment("pickup"); localStorage.setItem("sushi-fulfillment", "pickup"); }} /> Retirada <small>Na nossa casa</small></label>}</div></fieldset>
             {fulfillment === "delivery" && <fieldset><legend>Endereço de entrega</legend><div className="field-row"><label>Rua<input required value={address.street} onChange={(event) => setAddress({ ...address, street: event.target.value })} /></label><label>Número<input required value={address.number} onChange={(event) => setAddress({ ...address, number: event.target.value })} /></label></div><div className="field-row"><label>Bairro<input required value={address.neighborhood} onChange={(event) => setAddress({ ...address, neighborhood: event.target.value })} /></label><label>Complemento<input value={address.complement} onChange={(event) => setAddress({ ...address, complement: event.target.value })} /></label></div></fieldset>}
-            <fieldset><legend>Pagamento</legend><div className="payment-list">{store.pix_enabled && <label><input type="radio" name="payment" checked={payment === "pix"} onChange={() => setPayment("pix")} /> PIX <span>Pagamento instantâneo</span></label>}{store.card_on_delivery_enabled && <label><input type="radio" name="payment" checked={payment === "card_on_delivery"} onChange={() => setPayment("card_on_delivery")} /> Cartão na entrega <span>Leve sua maquininha</span></label>}{store.cash_enabled && <label><input type="radio" name="payment" checked={payment === "cash"} onChange={() => setPayment("cash")} /> Dinheiro <span>Pagamento na entrega</span></label>}</div>{payment === "cash" && store.cash_enabled && <label>Troco para<input required value={changeFor} onChange={(event) => setChangeFor(event.target.value)} placeholder="Ex.: R$ 100,00" /></label>}</fieldset>
+            <fieldset><legend>Pagamento</legend><div className="payment-list">{store.pix_enabled && <label><input type="radio" name="payment" checked={payment === "pix"} onChange={() => setPayment("pix")} /> PIX <span>Pagamento instantâneo</span></label>}{store.card_on_delivery_enabled && <label><input type="radio" name="payment" checked={payment === "card_on_delivery"} onChange={() => setPayment("card_on_delivery")} /> Cartão na entrega <span>Leve sua maquininha</span></label>}{store.cash_enabled && <label><input type="radio" name="payment" checked={payment === "cash"} onChange={() => setPayment("cash")} /> Dinheiro <span>Pagamento na entrega</span></label>}</div>{payment === "cash" && store.cash_enabled && <label>Troco para (opcional)<input type="number" min={total} step="0.01" inputMode="decimal" value={changeFor} onChange={(event) => setChangeFor(event.target.value)} placeholder="Deixe vazio se não precisar de troco" /></label>}</fieldset>
             <fieldset><legend>Observações do pedido</legend><textarea value={notes} maxLength={240} onChange={(event) => setNotes(event.target.value)} placeholder="Alguma observação para a nossa equipe?" /></fieldset>
             {error && <p className="form-error" role="alert">{error}</p>}
             {payment === "pix" && <p>{store.pix_instructions || "As instruções de pagamento serão confirmadas pela equipe."} O pagamento será conferido pelo restaurante.</p>}
