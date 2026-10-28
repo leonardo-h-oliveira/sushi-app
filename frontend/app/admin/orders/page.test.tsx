@@ -14,7 +14,7 @@ describe("AdminOrdersPage", () => {
     expect(screen.getByRole("heading", { name: "Staff sign in" })).toBeInTheDocument();
     await waitFor(() => expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining("/orders"),
-      { credentials: "include" },
+      { credentials: "include", cache: "no-store" },
     ));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });

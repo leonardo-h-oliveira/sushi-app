@@ -2,6 +2,33 @@
 
 Este checklist define quando o Sushi App pode ser chamado de MVP concluído. Cada item deve possuir uma evidência verificável, como uma execução de CI, um link do ambiente publicado ou o registro de um teste.
 
+## Evidências registradas em 28 de outubro de 2026
+
+Os itens abaixo comprovam entregas e testes; os itens operacionais seguintes
+continuam exigindo aceite no ambiente real. O controle atualizado da release é a
+[issue #14](https://github.com/leonardo-h-oliveira/sushi-app/issues/14).
+
+- [x] PR #56 integrada após corrigir e aprovar o teste de entrega.
+- [x] PR #57 integrada com confirmação de total e carregamento seguro de configurações.
+- [x] PR #58 integrada com bairros, horários, exceções, PIX e liberação operacional.
+- [x] PR #59 integrada com contas administrativas persistentes e revogação de sessões.
+- [x] PR #60 integrada com testes em 320/390 px, teclado, acessibilidade e PostgreSQL.
+- [x] PR #61 integrada com troco estruturado e validado.
+- [x] Migrações, seed, pedido, painel, acompanhamento e restauração em PostgreSQL isolado passaram na CI da PR #60: execução `40764970252`.
+- [x] Testes de pagamento e PostgreSQL passaram na CI da PR #61: execução `40765359341`.
+- [ ] Aprovar os valores comerciais, cardápio e informações do restaurante.
+- [ ] Definir contas, planos, domínio, limite de custo e responsáveis pela produção.
+- [ ] Provisionar a conta administrativa no ambiente escolhido e conferir cookies nos navegadores reais.
+- [ ] Conferir backup automático, monitoramento e restauração do banco do provedor.
+- [ ] Registrar aceite final da operação antes de abrir a loja e criar `v0.1.0`.
+
+Staging foi consultado por leitura em 28/10: frontend e API responderam HTTP 200,
+o catálogo retornou 124 produtos e a liberação operacional permaneceu desmarcada,
+com pedidos fechados. Isso não substitui o aceite final da produção.
+
+Procedimentos e informações pendentes: [produção e recuperação](production-acceptance.md)
+e [revisão das informações ao cliente](customer-information-review.md).
+
 ## Código e revisão
 
 - [ ] As branches de funcionalidade foram integradas por Pull Request.

@@ -1,0 +1,33 @@
+import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+test("staff can create, edit and deactivate a product on a narrow screen", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 320, height: 844 });
+  const api = "http://127.0.0.1:8000";
+  await page.request.post(`${api}/auth/login`, { data: { username: "e2e-admin", password: "e2e-password" } });
+  await page.goto("/admin/menu");
+  const category = `Aceite ${Date.now()}`;
+  const name = `Prato ${Date.now()}`;
+  await page.getByLabel("Nome da categoria", { exact: true }).fill(category);
+  await page.getByRole("button", { name: "Save category", exact: true }).click();
+  await page.getByLabel("Categoria do novo produto").selectOption({ label: category });
+  await page.getByLabel("Nome do produto", { exact: true }).fill(name);
+  await page.getByLabel("Preço do novo produto", { exact: true }).fill("20.00");
+  await page.getByRole("button", { name: "Save product", exact: true }).click();
+  const card = page.locator("article").filter({ hasText: name });
+  await expect(card).toBeVisible();
+  await card.getByRole("button", { name: "Editar produto" }).click();
+  await page.getByLabel("Preço atual", { exact: true }).fill("25.00");
+  await page.getByRole("button", { name: "Salvar alterações", exact: true }).click();
+  await expect(card).toContainText("25.00");
+  const publicProducts = await (await page.request.get(`${api}/products`)).json();
+  expect(publicProducts.find((item: { name: string }) => item.name === name).price).toBe("25.00");
+  await card.getByRole("button", { name: "Editar produto" }).click();
+  await page.getByLabel("Produto disponível no cardápio").uncheck();
+  await page.getByRole("button", { name: "Salvar alterações", exact: true }).click();
+  await expect.poll(async () => (await (await page.request.get(`${api}/products`)).json()).some((item: { name: string }) => item.name === name)).toBe(false);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)).toBe(false);
+  const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+  expect(results.violations.filter((item) => item.impact === "critical" || item.impact === "serious"), JSON.stringify(results.violations)).toEqual([]);
+  await page.screenshot({ path: testInfo.outputPath("staff-menu-mobile.png") });
+});
