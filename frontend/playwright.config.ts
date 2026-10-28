@@ -1,4 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+// Each invocation gets a fresh isolated database, including local reruns.
+const databasePath = process.env.SUSHI_E2E_DATABASE_PATH ?? join(mkdtempSync(join(tmpdir(), "sushi-e2e-")), "orders.db");
+process.env.SUSHI_E2E_DATABASE_PATH = databasePath;
 
 const apiUrl = "http://127.0.0.1:8000";
 
@@ -19,10 +26,10 @@ export default defineConfig({
     {
       command: "python -m alembic -c ../backend/alembic.ini upgrade head && python ../backend/seed.py && python -m uvicorn app.main:app --app-dir ../backend --host 127.0.0.1 --port 8000",
       url: `${apiUrl}/health`,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
       timeout: 120_000,
       env: {
-        DATABASE_URL: "sqlite:///./e2e.db",
+        DATABASE_URL: `sqlite:///${databasePath.replaceAll("\\", "/")}`,
         ENVIRONMENT: "test",
         ADMIN_USERNAME: "e2e-admin",
         ADMIN_PASSWORD: "e2e-password",
@@ -33,7 +40,7 @@ export default defineConfig({
     {
       command: "pnpm dev --hostname 127.0.0.1",
       url: "http://127.0.0.1:3000",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
       timeout: 120_000,
       env: { API_URL: apiUrl, NEXT_PUBLIC_API_URL: apiUrl },
     },
