@@ -67,14 +67,14 @@ export default function AdminSettingsPage() {
     }
   }
 
-  if (!authenticated) return <main className="mx-auto max-w-md px-6 py-20"><h1 className="text-3xl font-black">Configurações</h1><p className="my-4">Entre no painel do estabelecimento primeiro.</p><Link className="font-bold text-orange-600 underline" href="/admin/orders">Abrir acesso do estabelecimento</Link></main>;
+  if (!authenticated) return <main className="admin-page mx-auto max-w-md px-6 py-20"><h1 className="text-3xl font-black">Configurações</h1><p className="my-4">Entre no painel do estabelecimento primeiro.</p><Link className="font-bold text-orange-600 underline" href="/admin/orders">Abrir acesso do estabelecimento</Link></main>;
 
   const toggle = (field: keyof StoreSettings, label: string) => (
     <label className="flex items-center justify-between gap-4 rounded-xl border p-4"><span className="font-bold">{label}</span><input type="checkbox" checked={Boolean(settings[field])} onChange={(event) => setSettings({ ...settings, [field]: event.target.checked })} /></label>
   );
 
   return (
-    <main className="mx-auto min-h-screen max-w-3xl px-6 py-10">
+    <main className="admin-page mx-auto min-h-screen max-w-3xl px-6 py-10">
       <header className="mb-8"><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-4xl font-black">Configurações do estabelecimento</h1><nav className="mt-4 flex gap-4 text-sm font-bold"><Link href="/admin/orders">Pedidos</Link><Link href="/admin/menu">Cardápio</Link></nav></header>
       <form className="space-y-6 rounded-2xl bg-white p-6 shadow-sm" onSubmit={save}>
         {loading && <p role="status">Carregando configurações…</p>}

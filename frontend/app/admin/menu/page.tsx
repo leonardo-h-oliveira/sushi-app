@@ -234,7 +234,7 @@ export default function AdminMenuPage() {
 
   if (!authenticated) {
     return (
-      <main className="mx-auto max-w-md px-6 py-20">
+      <main className="admin-page mx-auto max-w-md px-6 py-20">
         <h1 className="mb-4 text-3xl font-black">Menu management</h1>
         <p className="mb-4 text-slate-600">Sign in through the staff dashboard first.</p>
         <a className="font-bold text-orange-600 underline" href="/admin/orders">
@@ -245,7 +245,7 @@ export default function AdminMenuPage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main className="admin-page mx-auto max-w-6xl px-6 py-10">
       <header className="mb-8 flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p>
@@ -276,7 +276,7 @@ export default function AdminMenuPage() {
             value={category}
             onChange={(event) => setCategory(event.target.value)}
             className="w-full rounded-xl border p-3"
-            placeholder="Category name"
+            aria-label="Nome da categoria" placeholder="Category name"
           />
           <button className="rounded-xl bg-slate-950 px-4 py-3 font-bold text-white">Save category</button>
           <div className="space-y-2 border-t pt-4">
@@ -299,13 +299,13 @@ export default function AdminMenuPage() {
             value={product.name}
             onChange={(event) => setProduct({ ...product, name: event.target.value })}
             className="w-full rounded-xl border p-3"
-            placeholder="Product name"
+            aria-label="Nome do produto" placeholder="Product name"
           />
           <textarea
             value={product.description}
             onChange={(event) => setProduct({ ...product, description: event.target.value })}
             className="w-full rounded-xl border p-3"
-            placeholder="Description"
+            aria-label="Descrição do novo produto" placeholder="Description"
           />
           <input
             required
@@ -315,7 +315,7 @@ export default function AdminMenuPage() {
             value={product.price}
             onChange={(event) => setProduct({ ...product, price: event.target.value })}
             className="w-full rounded-xl border p-3"
-            placeholder="Current price"
+            aria-label="Preço do novo produto" placeholder="Current price"
           />
           <input
             type="number"
@@ -324,10 +324,11 @@ export default function AdminMenuPage() {
             value={product.original_price}
             onChange={(event) => setProduct({ ...product, original_price: event.target.value })}
             className="w-full rounded-xl border p-3"
-            placeholder="Original price (optional)"
+            aria-label="Preço original do novo produto" placeholder="Original price (optional)"
           />
           <select
             required
+            aria-label="Categoria do novo produto"
             value={product.category_id}
             onChange={(event) => setProduct({ ...product, category_id: event.target.value })}
             className="w-full rounded-xl border p-3"
@@ -372,7 +373,7 @@ export default function AdminMenuPage() {
         <div className="grid gap-5 lg:grid-cols-3">
           <form onSubmit={createGroup} className="space-y-3 rounded-xl border p-4">
             <h3 className="font-black">New variant group</h3>
-            <select required value={groupForm.product_id} onChange={(event) => setGroupForm({ ...groupForm, product_id: event.target.value })} className="w-full rounded-xl border p-3">
+            <select required aria-label="Produto do grupo" value={groupForm.product_id} onChange={(event) => setGroupForm({ ...groupForm, product_id: event.target.value })} className="w-full rounded-xl border p-3">
               <option value="">Choose product</option>
               {products.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
             </select>
@@ -382,7 +383,7 @@ export default function AdminMenuPage() {
           </form>
           <form onSubmit={createVariant} className="space-y-3 rounded-xl border p-4">
             <h3 className="font-black">New variant</h3>
-            <select required value={variantForm.group_id} onChange={(event) => setVariantForm({ ...variantForm, group_id: event.target.value })} className="w-full rounded-xl border p-3">
+            <select required aria-label="Grupo da variação" value={variantForm.group_id} onChange={(event) => setVariantForm({ ...variantForm, group_id: event.target.value })} className="w-full rounded-xl border p-3">
               <option value="">Choose group</option>
               {products.flatMap((item) => item.variant_groups.map((group) => <option key={group.id} value={group.id}>{item.name} — {group.name}</option>))}
             </select>
@@ -392,7 +393,7 @@ export default function AdminMenuPage() {
           </form>
           <form onSubmit={createAddon} className="space-y-3 rounded-xl border p-4">
             <h3 className="font-black">New add-on</h3>
-            <select required value={addonForm.product_id} onChange={(event) => setAddonForm({ ...addonForm, product_id: event.target.value })} className="w-full rounded-xl border p-3">
+            <select required aria-label="Produto do adicional" value={addonForm.product_id} onChange={(event) => setAddonForm({ ...addonForm, product_id: event.target.value })} className="w-full rounded-xl border p-3">
               <option value="">Choose product</option>
               {products.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
             </select>

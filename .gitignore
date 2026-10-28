@@ -21,6 +21,9 @@ playwright-report/
 test-results/
 frontend/AGENTS.md
 frontend/CLAUDE.md
+private-backups/
+*.dump
+*.dump.sha256
 
 # IDE
 .vscode/

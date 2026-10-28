@@ -1,6 +1,10 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException
 import json
 import logging
+import uuid
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+from app.database import get_db
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
@@ -20,12 +24,14 @@ audit_logger = logging.getLogger("uvicorn.error")
 
 @app.middleware("http")
 async def record_staff_activity(request: Request, call_next):
+    request_id = uuid.uuid4().hex
     response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
     user_id = getattr(request.state, "admin_user_id", None)
-    if user_id is not None or request.url.path in {"/auth/login", "/auth/logout"}:
+    if user_id is not None or request.url.path in {"/auth/login", "/auth/logout"} or response.status_code >= 400:
         route = request.scope.get("route")
         audit_logger.info(json.dumps({
-            "event": "staff_request", "user_id": user_id,
+            "event": "request_result", "user_id": user_id, "request_id": request_id,
             "method": request.method, "route": getattr(route, "path", "authentication"),
             "status": response.status_code,
         }))
@@ -49,6 +55,15 @@ app.include_router(store_settings_router)
 @app.get("/health", tags=["Operations"])
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/ready", tags=["Operations"])
+def readiness_check(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+    except Exception:
+        raise HTTPException(status_code=503, detail="Database unavailable.") from None
+    return {"status": "ready"}
 
 
 @app.get("/")

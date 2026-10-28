@@ -193,3 +193,24 @@ footer a { color: #f3b3a9; font-size: 12px; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Staff controls remain readable without relying on unconfigured utility CSS. */
+.admin-page { margin: 0 auto; max-width: 1180px; min-height: 100vh; padding: 28px 20px; overflow-wrap: anywhere; }
+.admin-page.max-w-md { max-width: 448px; }
+.admin-page.max-w-3xl { max-width: 800px; }
+.admin-page h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.15; }
+.admin-page h2 { font-size: 22px; }
+.admin-page header, .admin-page section { margin-bottom: 24px; }
+.admin-page form { background: white; border: 1px solid var(--line); padding: 20px; margin-bottom: 24px; }
+.admin-page fieldset { border: 0; min-width: 0; margin: 0; padding: 0; }
+.admin-page label { display: block; margin: 12px 0; }
+.admin-page input:not([type="checkbox"]):not([type="radio"]), .admin-page textarea, .admin-page select { background: white; border: 1px solid #8a958d; border-radius: 6px; display: block; font: inherit; font-size: 16px; min-height: 44px; margin: 8px 0; max-width: 100%; width: 100%; padding: 10px; }
+.admin-page button { background: var(--ink); border: 1px solid var(--ink); border-radius: 6px; color: white; cursor: pointer; min-height: 44px; padding: 10px 14px; margin: 4px; }
+.admin-page button:disabled { opacity: .5; cursor: wait; }
+.admin-page a { color: var(--red-dark); text-decoration: underline; margin-right: 14px; }
+.admin-page .grid { display: grid; gap: 16px; }
+.admin-page .flex { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.admin-page article { background: white; border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+.admin-page [role="alert"] { color: #a02f20; background: #fbe9e6; padding: 12px; }
+.admin-page :focus-visible { outline: 3px solid var(--red-dark); outline-offset: 3px; }
+@media (min-width: 760px) { .admin-page section.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-page section > div.grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

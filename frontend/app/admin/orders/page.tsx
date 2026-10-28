@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
@@ -35,20 +35,36 @@ export default function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function loadOrders() {
-    setLoading(true);
-    const response = await fetch(`${API_URL}/orders`, { credentials: "include" });
-    if (response.status === 401) {
-      setAuthenticated(false);
-      setError("");
-    } else if (!response.ok) setError("Unable to load orders.");
-    else setOrders(await response.json());
-    setLoading(false);
-  }
+  const loadOrders = useCallback(async (background = false) => {
+    if (!background) setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/orders`, { credentials: "include", cache: "no-store" });
+      if (response.status === 401) {
+        setAuthenticated(false);
+        setOrders([]);
+        setError("");
+      } else if (!response.ok) setError("Não foi possível carregar os pedidos. Tente atualizar novamente.");
+      else { setAuthenticated(true); setOrders(await response.json()); setError(""); }
+    } catch {
+      setError("Não foi possível conectar ao painel. Confira sua conexão.");
+    } finally { setLoading(false); }
+  }, []);
 
   // The HttpOnly cookie is sent by the browser and cannot be read by JavaScript.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { void loadOrders(); }, []);
+  useEffect(() => { void Promise.resolve().then(() => loadOrders()); }, [loadOrders]);
+  useEffect(() => {
+    if (!authenticated) return;
+    const timer = setInterval(() => { void loadOrders(true); }, 15000);
+    return () => clearInterval(timer);
+  }, [authenticated, loadOrders]);
+
+  async function signOut() {
+    try {
+      const response = await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" });
+      if (!response.ok) { setError("Não foi possível encerrar a sessão. Tente novamente."); return; }
+      setAuthenticated(false); setOrders([]); setError("");
+    } catch { setError("Não foi possível encerrar a sessão. Confira sua conexão."); }
+  }
 
   async function signIn(event: FormEvent) {
     event.preventDefault(); setError("");
@@ -64,15 +80,16 @@ export default function AdminOrdersPage() {
     else setError("Unable to update this order.");
   }
 
-  if (!authenticated) return <main className="mx-auto flex min-h-screen max-w-md items-center px-6"><form onSubmit={signIn} className="w-full space-y-4 rounded-3xl bg-white p-8 shadow-xl"><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-3xl font-black text-slate-950">Staff sign in</h1><input aria-label="Username" value={username} onChange={(event) => setUsername(event.target.value)} className="w-full rounded-xl border p-3" placeholder="Username" /><input aria-label="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-xl border p-3" placeholder="Password" /><button className="w-full rounded-xl bg-slate-950 p-3 font-bold text-white">Sign in</button>{error && <p role="alert" className="text-sm text-red-600">{error}</p>}</form></main>;
+  if (!authenticated) return <main className="admin-page mx-auto flex min-h-screen max-w-md items-center px-6"><form onSubmit={signIn} className="w-full space-y-4 rounded-3xl bg-white p-8 shadow-xl"><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-3xl font-black text-slate-950">Staff sign in</h1><input aria-label="Username" value={username} onChange={(event) => setUsername(event.target.value)} className="w-full rounded-xl border p-3" placeholder="Username" /><input aria-label="Password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-xl border p-3" placeholder="Password" /><button className="w-full rounded-xl bg-slate-950 p-3 font-bold text-white">Sign in</button>{error && <p role="alert" className="text-sm text-red-600">{error}</p>}</form></main>;
 
   return (
-    <main className="mx-auto min-h-screen max-w-6xl px-6 py-10">
+    <main className="admin-page mx-auto min-h-screen max-w-6xl px-6 py-10">
       <header className="mb-8 flex items-center justify-between">
         <div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Sushi Poços</p><h1 className="text-4xl font-black text-slate-950">Painel de pedidos</h1><nav className="mt-3 flex gap-4 text-sm font-bold"><Link href="/admin/menu">Cardápio</Link><Link href="/admin/settings">Configurações</Link></nav></div>
-        <button onClick={() => { void fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" }); setAuthenticated(false); }} className="rounded-xl border px-4 py-2 text-sm font-bold">Sair</button>
+        <button onClick={() => void signOut()} className="rounded-xl border px-4 py-2 text-sm font-bold">Sair</button>
       </header>
       {error && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-red-700">{error}</p>}
+      <div className="mb-4 flex flex-wrap items-center gap-3"><button type="button" className="rounded-xl border px-4 py-2" onClick={() => void loadOrders()}>Atualizar pedidos</button><p role="status">{orders.filter((order) => order.status === "received").length} pedido(s) recebido(s). Atualização automática a cada 15 segundos.</p></div>
       {loading ? <p>Carregando pedidos…</p> : orders.length === 0 ? <p className="rounded-2xl bg-white p-8 text-slate-600">Nenhum pedido recebido.</p> : (
         <section className="grid gap-5 md:grid-cols-2">
           {orders.map((order) => (
