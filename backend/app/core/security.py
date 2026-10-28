@@ -1,24 +1,16 @@
 import secrets
-import base64
-import binascii
-import hashlib
-import hmac
-import json
 import time
 from collections import defaultdict, deque
 from typing import Annotated
 
-from fastapi import Cookie, Header, HTTPException, Request, status
+from fastapi import Cookie, Header, HTTPException, Request, status, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.services.admin_identity import resolve_session
+from app.models.admin import AdminSession
 
 from app.core.config import settings
 
-
-UNSAFE_PRODUCTION_VALUES = {
-    "admin_api_key": "local-development-only",
-    "admin_username": "admin",
-    "admin_password": "local-development-only",
-    "auth_secret": "local-development-only",
-}
 
 _attempts: dict[str, deque[float]] = defaultdict(deque)
 
@@ -39,35 +31,25 @@ def enforce_rate_limit(request: Request, scope: str, limit: int, window_seconds:
     attempts.append(now)
 
 
-def ensure_admin_security_configured() -> None:
-    """Fail closed when a deployed environment still uses development credentials."""
-    if settings.environment.lower() in {"development", "test"}:
-        return
-    unsafe = [
-        name
-        for name, unsafe_value in UNSAFE_PRODUCTION_VALUES.items()
-        if getattr(settings, name) == unsafe_value
-    ]
-    if unsafe:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Administrator access is not configured safely.",
-        )
-
-
 def require_admin(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
     admin_session: Annotated[str | None, Cookie(alias=settings.auth_cookie_name)] = None,
     admin_api_key: Annotated[str | None, Header(alias="X-Admin-Key")] = None,
     authorization: Annotated[str | None, Header()] = None,
-) -> None:
-    """Accept a signed administrator bearer session or the legacy API key."""
-    ensure_admin_security_configured()
-
+) -> AdminSession | None:
+    """Authorize a persistent staff session or a development-only legacy key."""
     bearer = authorization.removeprefix("Bearer ") if authorization and authorization.startswith("Bearer ") else None
     token = admin_session or bearer
     if token:
-        if verify_token(token):
-            return
+        session = resolve_session(db, token)
+        if session:
+            if admin_session and request.method not in {"GET", "HEAD", "OPTIONS"}:
+                origin = request.headers.get("origin")
+                if origin not in settings.cors_origins and (origin or settings.environment.lower() not in {"development", "test"}):
+                    raise HTTPException(status_code=403, detail="Untrusted browser origin.")
+            request.state.admin_user_id = session.user_id
+            return session
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The administrator session is invalid or expired.")
 
     if settings.environment.lower() not in {"development", "test"}:
@@ -85,28 +67,3 @@ def require_admin(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="The administrator API key is invalid.",
         )
-
-
-def create_token(username: str) -> str:
-    payload = {"sub": username, "exp": int(time.time()) + 60 * 60 * 8}
-    encoded = _encode(payload)
-    signature = _signature(encoded)
-    return f"{encoded}.{signature}"
-
-
-def verify_token(token: str) -> bool:
-    try:
-        encoded, signature = token.split(".", 1)
-        expected = _signature(encoded)
-        payload = json.loads(base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4)))
-        return hmac.compare_digest(signature, expected) and payload.get("exp", 0) > int(time.time())
-    except (ValueError, TypeError, json.JSONDecodeError, binascii.Error):
-        return False
-
-
-def _encode(payload: dict) -> str:
-    return base64.urlsafe_b64encode(json.dumps(payload, separators=(",", ":")).encode()).decode().rstrip("=")
-
-
-def _signature(encoded: str) -> str:
-    return hmac.new(settings.auth_secret.encode(), encoded.encode(), hashlib.sha256).hexdigest()

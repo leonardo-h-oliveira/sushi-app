@@ -9,6 +9,8 @@ from app.models import Category, Product, ProductAddon
 
 
 EXPECTED_TABLES = {
+    "admin_users",
+    "admin_sessions",
     "addresses",
     "alembic_version",
     "categories",
