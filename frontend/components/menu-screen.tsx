@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { Category, Product, ProductAddon } from "@/types/menu";
 
@@ -21,6 +21,33 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
   const [selectedVariants, setSelectedVariants] = useState<Record<number, number>>({});
   const [notes, setNotes] = useState("");
   const [cartNotice, setCartNotice] = useState("");
+  const dialogRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!selectedProduct) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialogRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    function handleKey(event: KeyboardEvent) {
+      if (event.key === "Escape") { event.preventDefault(); setSelectedProduct(null); return; }
+      if (event.key !== "Tab") return;
+      const controls = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), textarea, a[href]') ?? []);
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !dialogRef.current?.contains(document.activeElement))) {
+        event.preventDefault(); last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); first?.focus();
+      }
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKey);
+      previousFocus?.focus();
+    };
+  }, [selectedProduct]);
   const populatedCategories = categories.filter((category) =>
     products.some((product) => product.category.id === category.id),
   );
@@ -60,7 +87,7 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
     if (!selectedProduct) return;
     const activeGroups = selectedProduct.variant_groups.filter((group) => group.active);
     const missingGroup = activeGroups.find(
-      (group) => group.required && !selectedVariants[group.id],
+      (group) => group.required && group.variants.some((variant) => variant.active) && !selectedVariants[group.id],
     );
     if (missingGroup) {
       setCartNotice(`Escolha uma opção de ${missingGroup.name}.`);
@@ -71,7 +98,11 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
         .filter((variant) => variant.active && selectedVariants[group.id] === variant.id)
         .map((variant) => ({ group, variant })),
     );
-    const currentCart = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]") as unknown[];
+    let currentCart: unknown[] = [];
+    try {
+      const parsed = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]");
+      if (Array.isArray(parsed)) currentCart = parsed;
+    } catch { /* Rebuild a damaged cart from the current menu. */ }
     currentCart.push({
       product_id: selectedProduct.id,
       name: selectedProduct.name,
@@ -191,7 +222,7 @@ export function MenuScreen({ categories, products }: MenuScreenProps) {
         <div className="detail-backdrop" role="presentation" onMouseDown={(event) => {
           if (event.target === event.currentTarget) setSelectedProduct(null);
         }}>
-          <section className="product-detail" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+          <section ref={dialogRef} className="product-detail" role="dialog" aria-modal="true" aria-labelledby="detail-title">
             <button className="detail-close" type="button" onClick={() => setSelectedProduct(null)} aria-label="Fechar detalhes">×</button>
             <p className="eyebrow">{selectedProduct.category.name}</p>
             <h2 id="detail-title">{selectedProduct.name}</h2>
