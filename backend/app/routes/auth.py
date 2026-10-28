@@ -1,10 +1,12 @@
-import secrets
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 
 from app.core.config import settings
-from app.core.security import create_token, enforce_rate_limit, ensure_admin_security_configured, require_admin
+from sqlalchemy.orm import Session
+from app.core.security import enforce_rate_limit, require_admin
+from app.database import get_db
+from app.services.admin_identity import authenticate, revoke_session
 from app.schemas.auth import LoginRequest, LoginResponse
 
 
@@ -13,15 +15,12 @@ Administrator = Annotated[None, Depends(require_admin)]
 
 
 @router.post("/login", response_model=LoginResponse)
-def login(payload: LoginRequest, request: Request, response: Response):
-    ensure_admin_security_configured()
+def login(payload: LoginRequest, request: Request, response: Response, db: Annotated[Session, Depends(get_db)]):
+    origin = request.headers.get("origin")
+    if origin and origin not in settings.cors_origins:
+        raise HTTPException(status_code=403, detail="Untrusted browser origin.")
     enforce_rate_limit(request, "admin-login", settings.login_rate_limit)
-    if not (
-        secrets.compare_digest(payload.username, settings.admin_username)
-        and secrets.compare_digest(payload.password, settings.admin_password)
-    ):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid administrator credentials.")
-    token = create_token(payload.username)
+    token = authenticate(db, payload.username, payload.password)
     response.set_cookie(
         key=settings.auth_cookie_name,
         value=token,
@@ -35,7 +34,9 @@ def login(payload: LoginRequest, request: Request, response: Response):
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(response: Response, _: Administrator):
+def logout(response: Response, session: Annotated[object, Depends(require_admin)], db: Annotated[Session, Depends(get_db)]):
+    if session is not None:
+        revoke_session(db, session)
     response.delete_cookie(
         key=settings.auth_cookie_name,
         path="/",

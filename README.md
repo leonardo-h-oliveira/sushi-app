@@ -227,6 +227,11 @@ feat/4-categories-api
 
 ## Security
 
+Staff identities now require database provisioning in deployed environments.
+Read [the account setup and session guide](docs/admin-security.md) before
+deploying migration `0009_admin_identity`. Existing signed sessions must sign in
+again; environment username/password values do not create production accounts.
+
 - Never commit `.env` files, passwords, tokens or database credentials.
 - Keep only safe example values in `.env.example`.
 - Staff routes require signed bearer authentication configured through the administrator environment variables.

@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+import json
+import logging
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
@@ -12,6 +14,22 @@ app = FastAPI(
     title="Sushi App API",
     version="0.1.0"
 )
+
+audit_logger = logging.getLogger("uvicorn.error")
+
+
+@app.middleware("http")
+async def record_staff_activity(request: Request, call_next):
+    response = await call_next(request)
+    user_id = getattr(request.state, "admin_user_id", None)
+    if user_id is not None or request.url.path in {"/auth/login", "/auth/logout"}:
+        route = request.scope.get("route")
+        audit_logger.info(json.dumps({
+            "event": "staff_request", "user_id": user_id,
+            "method": request.method, "route": getattr(route, "path", "authentication"),
+            "status": response.status_code,
+        }))
+    return response
 
 app.add_middleware(
     CORSMiddleware,
