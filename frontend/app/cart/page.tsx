@@ -116,6 +116,8 @@ export default function CartPage() {
               <h2>Resumo</h2>
               {!settingsReady ? <>{settingsError ? <><p role="alert">{settingsError}</p><button onClick={() => void loadSettings()}>Tentar novamente</button></> : <p role="status">Carregando as regras da loja…</p>}</> : <>
               {!store.is_open && <p className="form-error" role="alert">O estabelecimento está fechado para novos pedidos.</p>}
+              {store.next_opening && <p>Próxima abertura: {new Date(store.next_opening).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}.</p>}
+              {store.delivery_neighborhoods.length > 0 && <p>Bairros atendidos: {store.delivery_neighborhoods.join(", ")}.</p>}
               {store.delivery_enabled && <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "delivery"} onChange={() => changeFulfillment("delivery")} /> Entrega <span>{money.format(Number(store.delivery_fee))}</span></label>}
               {store.pickup_enabled && <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "pickup"} onChange={() => changeFulfillment("pickup")} /> Retirada <span>Grátis</span></label>}
               <dl><div><dt>Subtotal</dt><dd>{money.format(subtotal)}</dd></div><div><dt>Entrega</dt><dd>{deliveryFee ? money.format(deliveryFee) : "Grátis"}</dd></div><div className="total-line"><dt>Total</dt><dd>{money.format(subtotal + deliveryFee)}</dd></div></dl>

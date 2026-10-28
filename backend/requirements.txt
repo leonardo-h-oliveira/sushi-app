@@ -4,3 +4,4 @@ SQLAlchemy==2.0.52
 alembic==1.19.2
 psycopg2-binary==2.9.12
 python-dotenv==1.2.3
+tzdata==2026.6

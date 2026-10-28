@@ -156,3 +156,68 @@ def test_total_confirmation_is_required(client, product):
     payload = order_payload(product)
     del payload["expected_total"]
     assert client.post("/orders", json=payload).status_code == 422
+
+
+def test_configured_delivery_area_rejects_unknown_neighborhood(client, product):
+    headers = {"X-Admin-Key": settings.admin_api_key}
+    assert client.patch("/admin/store-settings", headers=headers, json={"delivery_neighborhoods": ["São José"]}).status_code == 200
+    assert client.post("/orders", json=order_payload(product)).status_code == 422
+    payload = order_payload(product, address={"street": "Rua Central", "number": "10", "neighborhood": "  SAO JOSE  "})
+    assert client.post("/orders", json=payload).status_code == 201
+    payload["address"]["city"] = "Outra cidade"
+    assert client.post("/orders", json=payload).status_code == 422
+    assert client.post("/orders", json=order_payload(product, fulfillment_method="pickup", address=None, expected_total="29.90")).status_code == 201
+
+
+def test_live_order_readiness_requires_delivery_area_and_pix_instructions(client):
+    headers = {"X-Admin-Key": settings.admin_api_key}
+    assert client.patch("/admin/store-settings", headers=headers, json={"operations_ready": True}).status_code == 422
+    ready = client.patch("/admin/store-settings", headers=headers, json={"operations_ready": True, "delivery_neighborhoods": ["Centro"], "pix_instructions": "Solicite a chave à equipe."})
+    assert ready.status_code == 200
+    assert client.patch("/admin/store-settings", headers=headers, json={"delivery_neighborhoods": []}).status_code == 422
+
+
+@pytest.mark.parametrize("payload", [
+    {"schedule_enabled": True},
+    {"opening_hours": [{"weekday": 7, "opens": "18:00", "closes": "23:00"}]},
+    {"opening_hours": [{"weekday": 1, "opens": "25:00", "closes": "23:00"}]},
+    {"opening_hours": [{"weekday": 1, "opens": "18:00", "closes": "18:00"}]},
+    {"closed_dates": ["2026-02-30"]},
+])
+def test_invalid_operating_rules_are_rejected(client, payload):
+    assert client.patch("/admin/store-settings", headers={"X-Admin-Key": settings.admin_api_key}, json=payload).status_code == 422
+
+
+@pytest.mark.parametrize("instant, expected", [
+    ("2026-10-27T20:59:00+00:00", False),
+    ("2026-10-27T21:00:00+00:00", True),
+    ("2026-10-28T04:59:00+00:00", True),
+    ("2026-10-28T05:00:00+00:00", False),
+])
+def test_opening_hours_use_sao_paulo_and_support_overnight(instant, expected):
+    from datetime import datetime
+    from types import SimpleNamespace
+    from app.services.operating_rules import availability
+    store = SimpleNamespace(is_open=True, operations_ready=True, schedule_enabled=True,
+                            opening_hours=[{"weekday": 1, "opens": "18:00", "closes": "02:00"}], closed_dates=[])
+    assert availability(store, datetime.fromisoformat(instant))[0] is expected
+
+
+def test_special_closure_and_manual_override_take_priority():
+    from datetime import datetime
+    from types import SimpleNamespace
+    from app.services.operating_rules import availability
+    store = SimpleNamespace(is_open=True, operations_ready=True, schedule_enabled=True,
+                            opening_hours=[{"weekday": 1, "opens": "18:00", "closes": "02:00"}], closed_dates=["2026-10-28"])
+    assert availability(store, datetime.fromisoformat("2026-10-28T01:00:00-03:00"))[0] is False
+    store.closed_dates = []
+    store.is_open = False
+    assert availability(store, datetime.fromisoformat("2026-10-27T19:00:00-03:00")) == (False, None)
+
+
+def test_published_environment_stays_closed_until_rules_are_confirmed(monkeypatch):
+    from types import SimpleNamespace
+    from app.services import operating_rules
+    monkeypatch.setattr(operating_rules, "settings", SimpleNamespace(environment="production"))
+    store = SimpleNamespace(is_open=True, operations_ready=False)
+    assert operating_rules.availability(store) == (False, None)

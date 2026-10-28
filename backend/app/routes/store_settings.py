@@ -7,6 +7,7 @@ from app.core.security import require_admin
 from app.database import get_db
 from app.schemas.store_settings import StoreSettingsResponse, StoreSettingsUpdate
 from app.services import store_settings as settings_service
+from app.services.operating_rules import availability
 
 
 router = APIRouter(tags=["Store settings"])
@@ -16,7 +17,10 @@ Administrator = Annotated[None, Depends(require_admin)]
 
 @router.get("/store-settings", response_model=StoreSettingsResponse)
 def get_store_settings(db: DatabaseSession):
-    return settings_service.get_settings(db)
+    store = settings_service.get_settings(db)
+    data = StoreSettingsResponse.model_validate(store)
+    data.is_open, data.next_opening = availability(store)
+    return data
 
 
 @router.get("/admin/store-settings", response_model=StoreSettingsResponse)
