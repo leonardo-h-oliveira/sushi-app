@@ -9,6 +9,13 @@ export type StoreSettings = {
   cash_enabled: boolean;
   delivery_fee: string;
   minimum_order: string;
+  operations_ready: boolean;
+  delivery_neighborhoods: string[];
+  schedule_enabled: boolean;
+  opening_hours: { weekday: number; opens: string; closes: string }[];
+  closed_dates: string[];
+  pix_instructions: string;
+  next_opening?: string | null;
 };
 
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
@@ -20,15 +27,22 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   cash_enabled: true,
   delivery_fee: "5.00",
   minimum_order: "0.00",
+  operations_ready: false,
+  delivery_neighborhoods: [],
+  schedule_enabled: false,
+  opening_hours: [],
+  closed_dates: [],
+  pix_instructions: "",
 };
 
 export async function fetchStoreSettings(): Promise<StoreSettings> {
   const response = await fetch(`${API_URL}/store-settings`);
   if (!response.ok) throw new Error("Não foi possível carregar as configurações da loja.");
   const data = await response.json();
-  const flags = ["is_open", "delivery_enabled", "pickup_enabled", "pix_enabled", "card_on_delivery_enabled", "cash_enabled"];
+  const flags = ["is_open", "delivery_enabled", "pickup_enabled", "pix_enabled", "card_on_delivery_enabled", "cash_enabled", "operations_ready", "schedule_enabled"];
   if (!data || flags.some((key) => typeof data[key] !== "boolean") ||
-      ["delivery_fee", "minimum_order"].some((key) => !/^\d+(\.\d{1,2})?$/.test(String(data[key])))) {
+      ["delivery_fee", "minimum_order"].some((key) => !/^\d+(\.\d{1,2})?$/.test(String(data[key]))) ||
+      !Array.isArray(data.delivery_neighborhoods) || !Array.isArray(data.opening_hours) || !Array.isArray(data.closed_dates) || typeof data.pix_instructions !== "string") {
     throw new Error("As configurações da loja são inválidas.");
   }
   return data as StoreSettings;

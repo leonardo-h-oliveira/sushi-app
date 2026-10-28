@@ -40,6 +40,7 @@ export async function createOrder(payload: Record<string, unknown>): Promise<Ord
       "Pickup is currently unavailable.": "A retirada está indisponível. Revise a modalidade de recebimento.",
       "The selected payment method is unavailable.": "A forma de pagamento foi desativada. Escolha outra opção.",
       "One of the selected products is unavailable.": "Um produto ficou indisponível. Revise sua sacola.",
+      "This address is outside the delivery area.": "O endereço está fora da área de entrega. Confira os bairros atendidos ou escolha retirada.",
     };
     throw new OrderRequestError(
       detail?.code === "price_changed" ? `${detail.message} Se o preço dos produtos mudou, refaça os itens pelo cardápio.` : messages[detail] ?? "Não foi possível criar o pedido. Revise os dados e as regras da loja.",

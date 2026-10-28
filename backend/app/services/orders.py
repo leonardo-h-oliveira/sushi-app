@@ -13,16 +13,23 @@ from app.repositories import orders as order_repository
 from app.models.enums import OrderStatus
 from app.schemas.order import OrderCreate
 from app.services.store_settings import get_settings
+from app.services.operating_rules import availability, normalized_neighborhood
 
 
 def create_order(db: Session, payload: OrderCreate) -> Order:
     store = get_settings(db)
-    if not store.is_open:
+    if not availability(store)[0]:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="The store is currently closed.")
     if payload.fulfillment_method.value == "delivery" and not store.delivery_enabled:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Delivery is currently unavailable.")
     if payload.fulfillment_method.value == "pickup" and not store.pickup_enabled:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Pickup is currently unavailable.")
+    if payload.fulfillment_method.value == "delivery" and store.delivery_neighborhoods:
+        if (not payload.address or normalized_neighborhood(payload.address.neighborhood) not in
+                {normalized_neighborhood(name) for name in store.delivery_neighborhoods} or
+                normalized_neighborhood(payload.address.city) != normalized_neighborhood("Poços de Caldas") or
+                payload.address.state.upper() != "MG"):
+            raise HTTPException(status_code=422, detail="This address is outside the delivery area.")
     payment_enabled = {
         "pix": store.pix_enabled,
         "card_on_delivery": store.card_on_delivery_enabled,
