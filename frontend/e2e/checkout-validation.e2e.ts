@@ -12,12 +12,12 @@ test("delivery checkout requires customer and address information", async ({ pag
   await page.goto("/checkout");
 
   await page.getByRole("button", { name: /Confirmar pedido/ }).click();
-  await expect(page.getByRole("alert")).toContainText("nome e telefone");
+  await expect(page.getByRole("alert").filter({ hasText: "nome e telefone" })).toBeVisible();
 
   await page.getByLabel("Nome completo").fill("Cliente Entrega E2E");
   await page.getByLabel("Telefone").fill("35999990001");
   await page.getByRole("button", { name: /Confirmar pedido/ }).click();
-  await expect(page.getByRole("alert")).toContainText("rua, número e bairro");
+  await expect(page.getByRole("alert").filter({ hasText: "rua, número e bairro" })).toBeVisible();
 
   await page.getByLabel("Rua").fill("Rua de Teste");
   await page.getByLabel("Número").fill("123");
