@@ -21,6 +21,7 @@ EXPECTED_TABLES = {
     "product_variant_groups",
     "product_variants",
     "products",
+    "store_settings",
 }
 
 

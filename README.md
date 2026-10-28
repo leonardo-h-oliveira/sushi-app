@@ -4,6 +4,24 @@ A mobile-first ordering application for Sushi Poços. The MVP allows customers t
 
 ## Project status
 
+Release tracking is maintained in [issue #14](https://github.com/leonardo-h-oliveira/sushi-app/issues/14).
+The first release targets real restaurant orders. Commercial rules and the final
+restaurant acceptance are pending; the current staging deployment is not a
+production launch approval.
+
+Order creation requires `expected_total`, a decimal string with the exact total
+the customer reviewed. The server independently calculates the actual amount and
+returns HTTP 409 with `detail.code = "price_changed"` before persisting an order
+when the amounts differ. The checkout refreshes operating settings and requires
+another explicit confirmation. If product prices changed, the customer must
+rebuild the affected items from the current menu. Deploy the API and frontend
+together; older API clients without `expected_total` receive HTTP 422.
+
+Store settings are unavailable for editing until the protected settings request
+succeeds. PATCH requests contain only edited fields, and explicitly null settings
+are rejected. Migration `0007_store_settings_constraints` also enforces at least
+one fulfillment mode and payment method in the database.
+
 The MVP feature set is implemented and is currently in release validation. Automated backend and frontend checks cover the main rules, but the version is considered complete only after the end-to-end flow, mobile checks and staging deployment pass the [release checklist](docs/release-checklist.md).
 
 The initial database schema and its reversible Alembic migrations are available. Public catalog endpoints only expose active products from active categories.
@@ -185,11 +203,14 @@ feat/4-categories-api
 | `GET` | `/categories` | Lists active menu categories |
 | `GET` | `/products` | Lists available products; accepts a `category` slug filter |
 | `GET` | `/products/{id}` | Retrieves an available product |
+| `GET` | `/store-settings` | Lists customer-visible operational settings |
 | `POST` | `/auth/login` | Authenticates a staff member |
 | `POST` | `/auth/logout` | Validates a staff session logout request |
 | `GET` | `/orders` | Lists orders for authenticated staff |
 | `GET` | `/orders/track/{tracking_token}` | Retrieves a privacy-minimized order status using a secure tracking reference |
 | `PATCH` | `/orders/{number}/status` | Updates an order status for authenticated staff |
+| `GET` | `/admin/store-settings` | Retrieves operational settings for staff |
+| `PATCH` | `/admin/store-settings` | Updates availability, fees, minimum order and payments |
 | `POST` | `/admin/categories` | Creates a category |
 | `GET` | `/admin/categories` | Lists active and inactive categories for staff |
 | `PATCH` | `/admin/categories/{id}` | Renames or updates a category |

@@ -61,7 +61,7 @@ def test_valid_checkout_creates_order_and_status_can_be_retrieved(
             "customer_name": "Ana Sushi",
             "phone": "35999999999",
             "fulfillment_method": "delivery",
-            "payment_method": "pix",
+            "payment_method": "pix", "expected_total": "71.80",
             "address": {"street": "Rua Central", "number": "100", "neighborhood": "Centro"},
             "items": [{"product_id": product.id, "quantity": 2, "addon_ids": [product.addons[0].id], "notes": "Pouco shoyu"}],
         },
@@ -93,7 +93,7 @@ def test_pickup_has_no_delivery_fee(client: TestClient, product: Product) -> Non
             "customer_name": "Bruno Sushi",
             "phone": "35988888888",
             "fulfillment_method": "pickup",
-            "payment_method": "cash",
+            "payment_method": "cash", "expected_total": "29.90",
             "items": [{"product_id": product.id, "quantity": 1}],
         },
     )
@@ -120,7 +120,7 @@ def test_required_variant_is_validated_priced_and_snapshotted(
         "customer_name": "Variantes Teste",
         "phone": "35999999999",
         "fulfillment_method": "pickup",
-        "payment_method": "pix",
+        "payment_method": "pix", "expected_total": "29.90",
         "items": [{"product_id": product.id, "quantity": 1}],
     }
     incomplete = client.post("/orders", json=payload)
@@ -128,6 +128,7 @@ def test_required_variant_is_validated_priced_and_snapshotted(
     assert incomplete.json()["detail"] == "Choose an option for: Preparo."
 
     payload["items"][0]["variant_ids"] = [group.variants[1].id]
+    payload["expected_total"] = "31.90"
     completed = client.post("/orders", json=payload)
     assert completed.status_code == 201
     assert completed.json()["total"] == "31.90"
@@ -139,11 +140,11 @@ def test_required_variant_is_validated_priced_and_snapshotted(
 def test_invalid_order_data_returns_clear_errors(client: TestClient, product: Product) -> None:
     missing_address = client.post(
         "/orders",
-        json={"customer_name": "Ana", "phone": "35999999999", "fulfillment_method": "delivery", "payment_method": "pix", "items": [{"product_id": product.id, "quantity": 1}]},
+        json={"customer_name": "Ana", "phone": "35999999999", "fulfillment_method": "delivery", "payment_method": "pix", "expected_total": "29.90", "items": [{"product_id": product.id, "quantity": 1}]},
     )
     unavailable = client.post(
         "/orders",
-        json={"customer_name": "Ana", "phone": "35999999999", "fulfillment_method": "pickup", "payment_method": "pix", "items": [{"product_id": 999, "quantity": 1}]},
+        json={"customer_name": "Ana", "phone": "35999999999", "fulfillment_method": "pickup", "payment_method": "pix", "expected_total": "29.90", "items": [{"product_id": 999, "quantity": 1}]},
     )
     unknown = client.get("/orders/track/unknown-token")
 
@@ -178,7 +179,7 @@ def test_empty_required_variant_group_does_not_block_order(
             "customer_name": "Grupo Vazio",
             "phone": "35999999999",
             "fulfillment_method": "pickup",
-            "payment_method": "pix",
+            "payment_method": "pix", "expected_total": "29.90",
             "items": [{"product_id": product.id, "quantity": 1}],
         },
     )
@@ -192,7 +193,7 @@ def test_admin_can_list_orders_and_update_status(client: TestClient, product: Pr
             "customer_name": "Staff Test",
             "phone": "35999999999",
             "fulfillment_method": "pickup",
-            "payment_method": "pix",
+            "payment_method": "pix", "expected_total": "29.90",
             "items": [{"product_id": product.id, "quantity": 1}],
         },
     ).json()
