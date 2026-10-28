@@ -1,9 +1,13 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, vi } from "vitest";
 
 import CartPage from "./page";
+import { DEFAULT_STORE_SETTINGS } from "@/lib/store-settings";
 
-beforeEach(() => localStorage.clear());
+beforeEach(() => {
+  localStorage.clear();
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => DEFAULT_STORE_SETTINGS }));
+});
 
 describe("CartPage", () => {
   it("shows an empty state when there are no stored items", async () => {

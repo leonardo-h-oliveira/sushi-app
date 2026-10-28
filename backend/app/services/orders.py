@@ -64,6 +64,12 @@ def create_order(db: Session, payload: OrderCreate) -> Order:
             detail=f"The minimum order is {store.minimum_order:.2f}.",
         )
     delivery_fee = store.delivery_fee if payload.fulfillment_method.value == "delivery" else Decimal("0.00")
+    if payload.expected_total != subtotal + delivery_fee:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"code": "price_changed", "message": "O valor do pedido mudou. Revise o total antes de confirmar novamente.",
+                    "subtotal": str(subtotal), "delivery_fee": str(delivery_fee), "total": str(subtotal + delivery_fee)},
+        )
     order = Order(number=_order_number(), tracking_token=secrets.token_urlsafe(24), customer=customer, address=address, fulfillment_method=payload.fulfillment_method, payment_method=payload.payment_method, notes=payload.notes, subtotal=subtotal, delivery_fee=delivery_fee, total=subtotal + delivery_fee, items=order_items)
     return order_repository.save(db, order)
 

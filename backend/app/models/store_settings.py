@@ -9,6 +9,8 @@ from app.models.base import Base
 class StoreSettings(Base):
     __tablename__ = "store_settings"
     __table_args__ = (
+        CheckConstraint("delivery_enabled OR pickup_enabled", name="ck_store_settings_fulfillment"),
+        CheckConstraint("pix_enabled OR card_on_delivery_enabled OR cash_enabled", name="ck_store_settings_payment"),
         CheckConstraint("delivery_fee >= 0", name="ck_store_settings_delivery_fee_non_negative"),
         CheckConstraint("minimum_order >= 0", name="ck_store_settings_minimum_order_non_negative"),
     )

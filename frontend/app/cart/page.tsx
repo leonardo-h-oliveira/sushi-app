@@ -12,9 +12,28 @@ export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [fulfillment, setFulfillment] = useState<"delivery" | "pickup">("delivery");
   const [store, setStore] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
+  const [settingsReady, setSettingsReady] = useState(false);
+  const [settingsError, setSettingsError] = useState("");
+
+  async function loadSettings() {
+    setSettingsError("");
+    try {
+      const settings = await fetchStoreSettings();
+      setStore(settings);
+      if (!settings.delivery_enabled && settings.pickup_enabled) setFulfillment("pickup");
+      else if (!settings.pickup_enabled && settings.delivery_enabled) setFulfillment("delivery");
+      setSettingsReady(true);
+    } catch {
+      setSettingsError("Não foi possível carregar as regras da loja.");
+    }
+  }
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]") as CartItem[];
+    let stored: CartItem[] = [];
+    try {
+      const parsed = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]");
+      if (Array.isArray(parsed)) stored = parsed;
+    } catch { /* A damaged cart is treated as empty. */ }
     const storedFulfillment = localStorage.getItem("sushi-fulfillment");
     // localStorage is only available after hydration; synchronize browser state once.
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -22,11 +41,7 @@ export default function CartPage() {
     if (storedFulfillment === "pickup" || storedFulfillment === "delivery") {
       setFulfillment(storedFulfillment);
     }
-    void fetchStoreSettings().then((settings) => {
-      setStore(settings);
-      if ((!settings.delivery_enabled || !settings.is_open) && settings.pickup_enabled) setFulfillment("pickup");
-      else if (!settings.pickup_enabled && settings.delivery_enabled) setFulfillment("delivery");
-    }).catch(() => undefined);
+    void loadSettings();
   }, []);
 
   const subtotal = useMemo(
@@ -99,6 +114,7 @@ export default function CartPage() {
             </div>
             <aside className="cart-summary" aria-label="Resumo do pedido">
               <h2>Resumo</h2>
+              {!settingsReady ? <>{settingsError ? <><p role="alert">{settingsError}</p><button onClick={() => void loadSettings()}>Tentar novamente</button></> : <p role="status">Carregando as regras da loja…</p>}</> : <>
               {!store.is_open && <p className="form-error" role="alert">O estabelecimento está fechado para novos pedidos.</p>}
               {store.delivery_enabled && <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "delivery"} onChange={() => changeFulfillment("delivery")} /> Entrega <span>{money.format(Number(store.delivery_fee))}</span></label>}
               {store.pickup_enabled && <label className="fulfillment-option"><input type="radio" name="fulfillment" checked={fulfillment === "pickup"} onChange={() => changeFulfillment("pickup")} /> Retirada <span>Grátis</span></label>}
@@ -106,6 +122,7 @@ export default function CartPage() {
               {Number(store.minimum_order) > 0 && <p className="checkout-hint">Pedido mínimo: {money.format(Number(store.minimum_order))}</p>}
               {store.is_open && (store.delivery_enabled || store.pickup_enabled) && <Link className="primary-button checkout-button" href="/checkout">Continuar para checkout →</Link>}
               <p className="checkout-hint">Você poderá revisar endereço e pagamento na próxima etapa.</p>
+              </>}
             </aside>
           </div>
         )}

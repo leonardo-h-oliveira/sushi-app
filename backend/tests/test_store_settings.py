@@ -11,6 +11,8 @@ from app.core.config import settings
 from app.database import get_db
 from app.main import app
 from app.models import Base, Category, Product
+from app.models.order import Order
+from sqlalchemy import select, func
 
 
 @pytest.fixture
@@ -50,6 +52,7 @@ def product(db_session: Session) -> Product:
 def order_payload(product: Product, **changes):
     payload = {
         "customer_name": "Cliente Teste",
+        "expected_total": "34.90",
         "phone": "35999999999",
         "fulfillment_method": "delivery",
         "payment_method": "pix",
@@ -80,7 +83,7 @@ def test_public_defaults_and_admin_update(client: TestClient) -> None:
 def test_order_uses_fee_and_operational_rules(client: TestClient, product: Product) -> None:
     headers = {"X-Admin-Key": settings.admin_api_key}
     client.patch("/admin/store-settings", headers=headers, json={"delivery_fee": 9.5})
-    created = client.post("/orders", json=order_payload(product))
+    created = client.post("/orders", json=order_payload(product, expected_total="39.40"))
     assert created.status_code == 201
     assert created.json()["delivery_fee"] == "9.50"
 
@@ -110,3 +113,46 @@ def test_closed_store_and_disabled_payment_are_enforced(client: TestClient, prod
     unavailable = client.post("/orders", json=order_payload(product))
     assert unavailable.status_code == 409
     assert unavailable.json()["detail"] == "The selected payment method is unavailable."
+
+
+@pytest.mark.parametrize("field", ["is_open", "delivery_enabled", "pickup_enabled", "pix_enabled", "card_on_delivery_enabled", "cash_enabled", "delivery_fee", "minimum_order"])
+def test_explicit_null_is_rejected_without_changing_settings(client, field):
+    before = client.get("/store-settings").json()
+    response = client.patch("/admin/store-settings", headers={"X-Admin-Key": settings.admin_api_key}, json={field: None})
+    assert response.status_code == 422
+    assert client.get("/store-settings").json() == before
+
+
+def test_fee_change_requires_reconfirmation_and_creates_only_one_order(client, product, db_session):
+    payload = order_payload(product)
+    client.patch("/admin/store-settings", headers={"X-Admin-Key": settings.admin_api_key}, json={"delivery_fee": "10.00"})
+    stale = client.post("/orders", json=payload)
+    assert stale.status_code == 409
+    assert stale.json()["detail"]["code"] == "price_changed"
+    assert stale.json()["detail"]["total"] == "39.90"
+    assert db_session.scalar(select(func.count()).select_from(Order)) == 0
+    payload["expected_total"] = "39.90"
+    assert client.post("/orders", json=payload).status_code == 201
+    assert db_session.scalar(select(func.count()).select_from(Order)) == 1
+
+
+def test_product_price_change_requires_reconfirmation(client, product, db_session):
+    payload = order_payload(product)
+    product.price = Decimal("35.00")
+    db_session.commit()
+    response = client.post("/orders", json=payload)
+    assert response.status_code == 409
+    assert response.json()["detail"]["total"] == "40.00"
+
+
+def test_pickup_ignores_fee_and_accepts_exact_minimum(client, product):
+    client.patch("/admin/store-settings", headers={"X-Admin-Key": settings.admin_api_key}, json={"delivery_fee": "100.00", "minimum_order": "29.90"})
+    response = client.post("/orders", json=order_payload(product, fulfillment_method="pickup", address=None, expected_total="29.90"))
+    assert response.status_code == 201
+    assert response.json()["delivery_fee"] == "0.00"
+
+
+def test_total_confirmation_is_required(client, product):
+    payload = order_payload(product)
+    del payload["expected_total"]
+    assert client.post("/orders", json=payload).status_code == 422

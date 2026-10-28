@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import type { CartItem } from "@/types/cart";
-import { cartItemsToOrderItems, createOrder } from "@/lib/order-api";
+import { cartItemsToOrderItems, createOrder, OrderRequestError } from "@/lib/order-api";
 import type { OrderResult } from "@/lib/order-api";
 import { DEFAULT_STORE_SETTINGS, fetchStoreSettings, type StoreSettings } from "@/lib/store-settings";
 
@@ -24,16 +24,14 @@ export default function CheckoutPage() {
   const [confirmedOrder, setConfirmedOrder] = useState<OrderResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [store, setStore] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
+  const [settingsReady, setSettingsReady] = useState(false);
+  const [settingsError, setSettingsError] = useState("");
 
-  useEffect(() => {
-    // localStorage is only available after hydration; this synchronizes browser state once.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setItems(JSON.parse(localStorage.getItem("sushi-cart") ?? "[]") as CartItem[]);
-    const storedFulfillment = localStorage.getItem("sushi-fulfillment");
-    if (storedFulfillment === "pickup" || storedFulfillment === "delivery") {
-      setFulfillment(storedFulfillment);
-    }
-    void fetchStoreSettings().then((settings) => {
+  async function loadSettings() {
+    setSettingsReady(false);
+    setSettingsError("");
+    try {
+      const settings = await fetchStoreSettings();
       setStore(settings);
       if (!settings.delivery_enabled && settings.pickup_enabled) setFulfillment("pickup");
       else if (!settings.pickup_enabled && settings.delivery_enabled) setFulfillment("delivery");
@@ -41,7 +39,26 @@ export default function CheckoutPage() {
         if (settings.card_on_delivery_enabled) setPayment("card_on_delivery");
         else if (settings.cash_enabled) setPayment("cash");
       }
-    }).catch(() => undefined);
+      setSettingsReady(true);
+    } catch {
+      setSettingsError("Não foi possível carregar as regras da loja. Tente novamente.");
+    }
+  }
+
+  useEffect(() => {
+    // localStorage is only available after hydration; this synchronizes browser state once.
+    try {
+      const stored = JSON.parse(localStorage.getItem("sushi-cart") ?? "[]");
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate browser-only cart state.
+      setItems(Array.isArray(stored) ? stored : []);
+    } catch {
+      setItems([]);
+    }
+    const storedFulfillment = localStorage.getItem("sushi-fulfillment");
+    if (storedFulfillment === "pickup" || storedFulfillment === "delivery") {
+      setFulfillment(storedFulfillment);
+    }
+    void loadSettings();
   }, []);
 
   const subtotal = useMemo(() => items.reduce((total, item) => total + Number(item.unit_total ?? 0) * item.quantity, 0), [items]);
@@ -50,6 +67,7 @@ export default function CheckoutPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!settingsReady || submitting) return;
     if (!store.is_open) return setError("O estabelecimento está fechado para novos pedidos.");
     if (subtotal < Number(store.minimum_order)) return setError(`O pedido mínimo é ${money.format(Number(store.minimum_order))}.`);
     if (!customerName.trim() || !phone.trim()) {
@@ -71,6 +89,7 @@ export default function CheckoutPage() {
         payment_method: payment, address: fulfillment === "delivery" ? address : null,
         notes: `${notes}${payment === "cash" ? ` Troco para ${changeFor}.` : ""}`.trim() || null,
         items: cartItemsToOrderItems(items),
+        expected_total: total.toFixed(2),
       });
       localStorage.setItem("last-order-tracking-token", order.tracking_token);
       localStorage.removeItem("sushi-cart");
@@ -78,6 +97,9 @@ export default function CheckoutPage() {
       setError("");
       setConfirmed(true);
     } catch (requestError) {
+      if (requestError instanceof OrderRequestError && (requestError.status === 409 || requestError.status === 422)) {
+        await loadSettings();
+      }
       setError(requestError instanceof Error ? requestError.message : "Não foi possível enviar o pedido.");
     } finally {
       setSubmitting(false);
@@ -92,6 +114,8 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return <main className="state-page"><span className="state-symbol" aria-hidden="true">○</span><p className="eyebrow">Checkout</p><h1>Sua sacola está vazia.</h1><p>Adicione um item antes de continuar.</p><Link className="primary-button" href="/">Explorar o cardápio →</Link></main>;
   }
+
+  if (!settingsReady) return <main className="state-page"><h1>Checkout</h1>{settingsError ? <><p role="alert">{settingsError}</p><button className="primary-button" onClick={() => void loadSettings()}>Tentar novamente</button></> : <p role="status">Carregando as regras da loja…</p>}<Link href="/cart">Voltar à sacola</Link></main>;
 
   return (
     <main className="checkout-page">

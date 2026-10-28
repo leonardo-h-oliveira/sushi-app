@@ -25,5 +25,11 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
 export async function fetchStoreSettings(): Promise<StoreSettings> {
   const response = await fetch(`${API_URL}/store-settings`);
   if (!response.ok) throw new Error("Não foi possível carregar as configurações da loja.");
-  return { ...DEFAULT_STORE_SETTINGS, ...(await response.json()) };
+  const data = await response.json();
+  const flags = ["is_open", "delivery_enabled", "pickup_enabled", "pix_enabled", "card_on_delivery_enabled", "cash_enabled"];
+  if (!data || flags.some((key) => typeof data[key] !== "boolean") ||
+      ["delivery_fee", "minimum_order"].some((key) => !/^\d+(\.\d{1,2})?$/.test(String(data[key])))) {
+    throw new Error("As configurações da loja são inválidas.");
+  }
+  return data as StoreSettings;
 }

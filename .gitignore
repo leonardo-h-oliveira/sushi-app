@@ -19,6 +19,8 @@ dist/
 coverage/
 playwright-report/
 test-results/
+frontend/AGENTS.md
+frontend/CLAUDE.md
 
 # IDE
 .vscode/

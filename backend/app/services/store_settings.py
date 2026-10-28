@@ -16,7 +16,10 @@ def get_settings(db: Session) -> StoreSettings:
 
 
 def update_settings(db: Session, payload: StoreSettingsUpdate) -> StoreSettings:
-    settings = get_settings(db)
+    get_settings(db)
+    # Serialize changes to the singleton on PostgreSQL so cross-field validation
+    # cannot observe stale values from another administrator's transaction.
+    settings = db.get(StoreSettings, 1, with_for_update=True, populate_existing=True)
     changes = payload.model_dump(exclude_unset=True)
     resulting = {field: changes.get(field, getattr(settings, field)) for field in (
         "delivery_enabled", "pickup_enabled", "pix_enabled", "card_on_delivery_enabled", "cash_enabled"

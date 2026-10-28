@@ -27,6 +27,7 @@ class OrderItemInput(BaseModel):
 
 
 class OrderCreate(BaseModel):
+    expected_total: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
     customer_name: str = Field(min_length=2, max_length=120)
     phone: str = Field(min_length=8, max_length=30)
     fulfillment_method: FulfillmentMethod

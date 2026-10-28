@@ -30,4 +30,6 @@ class StoreSettingsUpdate(BaseModel):
     def require_change(self):
         if not self.model_fields_set:
             raise ValueError("At least one store setting must be provided.")
+        if any(getattr(self, field) is None for field in self.model_fields_set):
+            raise ValueError("Store settings cannot be null.")
         return self
