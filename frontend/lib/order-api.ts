@@ -8,6 +8,7 @@ export interface OrderResult {
   status: string;
   fulfillment_method: "delivery" | "pickup";
   payment_method: "pix" | "card_on_delivery" | "cash";
+  cash_change_for?: string | null;
   subtotal: string;
   delivery_fee: string;
   total: string;
@@ -41,6 +42,7 @@ export async function createOrder(payload: Record<string, unknown>): Promise<Ord
       "The selected payment method is unavailable.": "A forma de pagamento foi desativada. Escolha outra opção.",
       "One of the selected products is unavailable.": "Um produto ficou indisponível. Revise sua sacola.",
       "This address is outside the delivery area.": "O endereço está fora da área de entrega. Confira os bairros atendidos ou escolha retirada.",
+      "The cash amount must cover the order total.": "O valor para troco deve cobrir o total do pedido.",
     };
     throw new OrderRequestError(
       detail?.code === "price_changed" ? `${detail.message} Se o preço dos produtos mudou, refaça os itens pelo cardápio.` : messages[detail] ?? "Não foi possível criar o pedido. Revise os dados e as regras da loja.",

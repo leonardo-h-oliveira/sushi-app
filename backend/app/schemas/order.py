@@ -32,12 +32,15 @@ class OrderCreate(BaseModel):
     phone: str = Field(min_length=8, max_length=30)
     fulfillment_method: FulfillmentMethod
     payment_method: PaymentMethod
+    cash_change_for: Decimal | None = Field(default=None, ge=0, max_digits=10, decimal_places=2)
     address: AddressInput | None = None
     notes: str | None = Field(default=None, max_length=500)
     items: list[OrderItemInput] = Field(min_length=1, max_length=50)
 
     @model_validator(mode="after")
     def validate_delivery_address(self):
+        if self.payment_method != PaymentMethod.CASH and self.cash_change_for is not None:
+            raise ValueError("Change is only available for cash payments.")
         if self.fulfillment_method == FulfillmentMethod.DELIVERY and self.address is None:
             raise ValueError("An address is required for delivery orders.")
         return self
@@ -78,6 +81,7 @@ class OrderResponse(BaseModel):
     status: OrderStatus
     fulfillment_method: FulfillmentMethod
     payment_method: PaymentMethod
+    cash_change_for: Decimal | None = None
     subtotal: Decimal
     delivery_fee: Decimal
     total: Decimal

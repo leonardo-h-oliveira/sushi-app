@@ -46,6 +46,7 @@ class Order(Base):
         nullable=False,
     )
     notes: Mapped[str | None] = mapped_column(Text)
+    cash_change_for: Mapped[Decimal | None] = mapped_column(Numeric(10, 2), nullable=True)
     subtotal: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     delivery_fee: Mapped[Decimal] = mapped_column(
         Numeric(10, 2), default=Decimal("0.00"), nullable=False

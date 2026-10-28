@@ -63,7 +63,7 @@ def create_order(db: Session, payload: OrderCreate) -> Order:
         unit_price = product.price + option_total
         item_total = unit_price * item_input.quantity
         subtotal += item_total
-        order_items.append(OrderItem(product=product, product_name=product.name, quantity=item_input.quantity, unit_price=unit_price, total=item_total, notes=item_input.notes, addons=addons, variants=variants))
+        order_items.append(OrderItem(product_id=product.id, product_name=product.name, quantity=item_input.quantity, unit_price=unit_price, total=item_total, notes=item_input.notes, addons=addons, variants=variants))
 
     if subtotal < store.minimum_order:
         raise HTTPException(
@@ -77,7 +77,10 @@ def create_order(db: Session, payload: OrderCreate) -> Order:
             detail={"code": "price_changed", "message": "O valor do pedido mudou. Revise o total antes de confirmar novamente.",
                     "subtotal": str(subtotal), "delivery_fee": str(delivery_fee), "total": str(subtotal + delivery_fee)},
         )
+    if payload.cash_change_for is not None and payload.cash_change_for < subtotal + delivery_fee:
+        raise HTTPException(status_code=422, detail="The cash amount must cover the order total.")
     order = Order(number=_order_number(), tracking_token=secrets.token_urlsafe(24), customer=customer, address=address, fulfillment_method=payload.fulfillment_method, payment_method=payload.payment_method, notes=payload.notes, subtotal=subtotal, delivery_fee=delivery_fee, total=subtotal + delivery_fee, items=order_items)
+    order.cash_change_for = payload.cash_change_for
     return order_repository.save(db, order)
 
 

@@ -169,6 +169,21 @@ def test_configured_delivery_area_rejects_unknown_neighborhood(client, product):
     assert client.post("/orders", json=order_payload(product, fulfillment_method="pickup", address=None, expected_total="29.90")).status_code == 201
 
 
+def test_cash_change_is_validated_and_visible_to_staff(client, product):
+    insufficient = client.post("/orders", json=order_payload(product, payment_method="cash", cash_change_for="30.00"))
+    assert insufficient.status_code == 422
+    non_cash = client.post("/orders", json=order_payload(product, cash_change_for="50.00"))
+    assert non_cash.status_code == 422
+    response = client.post("/orders", json=order_payload(product, payment_method="cash", cash_change_for="50.00"))
+    assert response.status_code == 201
+    assert response.json()["cash_change_for"] == "50.00"
+    orders = client.get("/orders", headers={"X-Admin-Key": settings.admin_api_key}).json()
+    assert orders[0]["cash_change_for"] == "50.00"
+    no_change = client.post("/orders", json=order_payload(product, payment_method="cash"))
+    assert no_change.status_code == 201
+    assert no_change.json()["cash_change_for"] is None
+
+
 def test_live_order_readiness_requires_delivery_area_and_pix_instructions(client):
     headers = {"X-Admin-Key": settings.admin_api_key}
     assert client.patch("/admin/store-settings", headers=headers, json={"operations_ready": True}).status_code == 422

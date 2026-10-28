@@ -49,6 +49,7 @@ def _response(order):
             "status": order.status,
             "fulfillment_method": order.fulfillment_method,
             "payment_method": order.payment_method,
+            "cash_change_for": order.cash_change_for,
             "subtotal": order.subtotal,
             "delivery_fee": order.delivery_fee,
             "total": order.total,

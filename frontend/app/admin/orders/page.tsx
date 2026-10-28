@@ -13,6 +13,7 @@ type Order = {
   phone?: string;
   fulfillment_method: string;
   payment_method: string;
+  cash_change_for?: string | null;
   total: string;
   created_at: string;
   notes?: string;
@@ -83,6 +84,7 @@ export default function AdminOrdersPage() {
               <dl className="mt-4 grid gap-1 text-sm">
                 <div><dt className="inline font-bold">Recebimento: </dt><dd className="inline">{order.fulfillment_method === "delivery" ? "Entrega" : "Retirada"}</dd></div>
                 <div><dt className="inline font-bold">Pagamento: </dt><dd className="inline">{order.payment_method === "pix" ? "PIX" : order.payment_method === "cash" ? "Dinheiro" : "Cartão na entrega"}</dd></div>
+                {order.cash_change_for && <div><dt className="inline font-bold">Troco para: </dt><dd className="inline">R$ {order.cash_change_for}</dd></div>}
                 {order.address && <div><dt className="inline font-bold">Endereço: </dt><dd className="inline">{order.address.street}, {order.address.number} — {order.address.neighborhood}{order.address.complement ? `, ${order.address.complement}` : ""}</dd></div>}
                 {order.notes && <div><dt className="inline font-bold">Observações: </dt><dd className="inline">{order.notes}</dd></div>}
               </dl>
